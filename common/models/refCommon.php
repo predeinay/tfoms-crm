@@ -42,11 +42,15 @@ class refCommon extends \yii\db\ActiveRecord
         
         if ($kindModel) {
             
-            $commonArrTypes = [ 'Консультация' => 'Результат обращения (консультации)',
-                                'Жалоба' => 'Результат обращения (жалобы)',
-                                'Заявление' => 'Результат обращения (заявления)'];
+            $commonArrTypes = [ 'КОНСУЛЬТАЦИЯ' => 'Результат обращения (консультации)',
+                                'ЖАЛОБА' => 'Результат обращения (жалобы)',
+                                'ЗАЯВЛЕНИЕ' => 'Результат обращения (заявления)'];
             
-            return refCommon::find()->where(['type' => $commonArrTypes[$kindModel->text]]);
+            return refCommon::find()->where([
+                'type' => $commonArrTypes[
+                            mb_strtoupper($kindModel->text,"UTF-8")
+                          ]
+            ]);
             
         }
         
