@@ -7,7 +7,8 @@ use kartik\widgets\Select2;
 use kartik\widgets\DateTimePicker;
 use kartik\widgets\DepDrop;
 use yii\helpers\ArrayHelper;
-
+use yii\web\View;
+use yii\helpers\Url;
 
 use yii\bootstrap\Nav;
 
@@ -15,6 +16,45 @@ $action == 'create' ? $this->title = 'Создание нового обраще
 
 $this->params['breadcrumbs'][] = ['label' => 'Список обращения', 'url' => ['/site/index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$js = '
+  function getReasonCustomFlag() {
+  
+        var l_reason_id = $("#requests-reason_id").val();
+        
+        $.ajax({
+            url: "'.Url::toRoute('site/is-custom-reason').'" ,
+            data: { reason_id : l_reason_id },
+            type: "post",
+            success: function(data) { 
+                        if (data) {
+                            var jsonObj = JSON.parse(data);
+                            if ( jsonObj.custom_reason_flag == 1 ) {
+                                $("#requests-reason_custom_text").parent().show();
+                            } else {
+                                $("#requests-reason_custom_text").parent().hide();
+                            }
+                            
+                        }
+                     }
+            });
+  }
+
+  $("#requests-reason_id").on("change", function(event) {
+  
+      getReasonCustomFlag();
+
+   });
+
+  function init() {
+      getReasonCustomFlag();
+  }
+  
+  init();
+';
+
+$this->registerJS($js,View::POS_READY, 'request-get-reason-info');
+
 ?>
 
 <div class="container-fluid">
@@ -26,26 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>    
     
     <?php
-    /*if (isset($model->req_id))
-    echo Nav::widget([
-                'items' => [
-                    [ 
-                      'label' => 'Основная информация',
-                      'url' => ['/site/form'],
-                    ],
-                    [ 
-                      'label' => 'Комментарии',
-                      'url' => ['/site/error'],
-                    ],
-                    [ 
-                      'label' => 'Звонки',
-                      'url' => ['/site/error'],
-                    ],
-                ],
-    
-                'options' => ['class' =>'nav-tabs']
-     ]);
-    */
+
     $form = ActiveForm::begin([
         'action' => $action == 'create' ? ['site/create'] : ['site/update','id' => $model->req_id ]
     ]);
@@ -94,9 +115,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'placeholder' => '- Укажите суть обращения -',
                         'url' => yii\helpers\Url::to(['/site/subreason']),
                        // 'initialize' => true
-                    ]
+                    ],
+
                 ]); ?>
     
+    <?= $form->field($model,'reason_custom_text')->textarea() ?>
+        
     <?= $form->field($model, 'result_ref_id')
              ->widget(DepDrop::classname(), [
                     //'type'=>DepDrop::TYPE_SELECT2,

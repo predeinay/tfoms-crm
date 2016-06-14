@@ -38,6 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         
     <?= $form->field($model, 'reason_text')->textInput()->hint('Укажите название сути') ?>
     <?= $form->field($model, 'reason_code')->textInput()->hint('Укажите код сути') ?>
+    <?= $form->field($model, 'custom_text_flag')->dropDownList(['0' => 'Нет', '1' => 'Да'])?>
     
         
     <?= Html::a('Вернуться',['settings/reasons'],['class'=>'btn']) ?>

@@ -18,7 +18,8 @@ class refReason extends \yii\db\ActiveRecord
             'reason_id' => '',
             'reason_text' => 'Описание сути',
             'reason_code' => 'Код сути',
-            'kind_ref_id' => 'Вид обращения'
+            'kind_ref_id' => 'Вид обращения',
+            'custom_text_flag' => 'Требует дополнительного описания при регистрации обращения',
         ];
     }
     
@@ -27,8 +28,7 @@ class refReason extends \yii\db\ActiveRecord
         return [
             
             [['reason_text','reason_code','kind_ref_id'], 'required'],
-            [['reason_id','kind_ref_id'], 'number'],
-            
+            [['reason_id','kind_ref_id','custom_text_flag'], 'number'],
         ];
         
     }

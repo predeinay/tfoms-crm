@@ -7,16 +7,10 @@ use yii\web\Controller;
 use common\models\Requests;
 use backend\models\LoginForm;
 use yii\filters\VerbFilter;
-use yii\data\ActiveDataProvider;
-
 use common\models\refCommon;
 use common\models\refReason;
 
 use yii\db\Expression;
-use yii\db\Query;
-/**
- * Site controller
- */
 
 class SiteController extends Controller
 {
@@ -41,7 +35,8 @@ class SiteController extends Controller
                         'actions' => ['logout', 'index',
                                       'form','create','update','delete',
                                       'main-form',
-                                      'subreason','subresult'],
+                                      'subreason','subresult',
+                                      'is-custom-reason'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -100,7 +95,6 @@ class SiteController extends Controller
                               'modelKind' => refCommon::getRefByName('Вид обращения'),
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
-                              //'modelReason' => refReason::getAll(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
                               'action' => is_null($id) ? 'create' : 'edit']);
         
@@ -199,6 +193,22 @@ class SiteController extends Controller
              'output' =>  $out,
              'selected' => ''
             ]);
+        
+    }
+    
+    public function actionIsCustomReason() {
+        
+        if (Yii::$app->request->post()['reason_id']) {
+            
+            $reason = refReason::findOne(Yii::$app->request->post());
+            return \yii\helpers\Json::encode(
+                    ['custom_reason_flag' => $reason->custom_text_flag]
+                );
+        }
+        
+        return \yii\helpers\Json::encode(
+                    ['custom_reason_flag' => 0]
+                );
         
     }
     

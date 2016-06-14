@@ -23,6 +23,7 @@ class Requests extends \yii\db\ActiveRecord
             'birth_day' => 'Дата рождения',
             'address' => 'Адрес обратившегося',
             'reason_id' => 'Суть обращения',
+            'reason_custom_text' => 'Текстовое описание сути',
             'form_ref_id' => 'Форма обращения',
             'kind_ref_id' => 'Вид обращения',
             'way_ref_id' => 'Путь поступления',
@@ -51,7 +52,7 @@ class Requests extends \yii\db\ActiveRecord
         
         return [
             [['created_on','reason_id','form_ref_id','kind_ref_id','way_ref_id','status_ref_id'], 'required'],
-            [['address','note','final_note'], 'string', 'max' => 512],
+            [['address','note','final_note','reason_custom_text'], 'string', 'max' => 512],
             [['surname','patronymic','name'], 'string', 'max' => 128],
             [['policy_ser','policy_num'],'string','max' => 24],
             [['phone_aoh','phone_contact'],'string','max' => 12],
