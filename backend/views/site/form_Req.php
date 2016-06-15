@@ -145,10 +145,10 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
             <?= $form->field($model, 'surname')->textInput(['placeholder' => 'Укажите фамилию']) ?>
         </div>
         <div class="col-sm-4">
-            <?= $form->field($model, 'name')->textInput(['placeholder' => 'Укажите отчество']) ?>  
+            <?= $form->field($model, 'name')->textInput(['placeholder' => 'Укажите имя']) ?>  
         </div>
         <div class="col-sm-4">
-            <?= $form->field($model, 'patronymic')->textInput(['placeholder' => 'Укажите имя']) ?>  
+            <?= $form->field($model, 'patronymic')->textInput(['placeholder' => 'Укажите отчество']) ?>  
         </div>
     </div>
     <div class="row">
@@ -168,16 +168,18 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                 ])
         ?>
         </div>
-        <div class="col-sm-4">
-            <?= $form->field($model, 'policy_num')->textInput(['placeholder' => 'Номер полиса страхования']) ?>  
-        </div>
         <div class="col-sm-4">    
             <?= $form->field($model, 'policy_ser')->textInput(['placeholder' => 'Серия полиса']) ?>  
+        </div>
+        <div class="col-sm-4">
+            <?= $form->field($model, 'policy_num')->textInput(['placeholder' => 'Номер полиса страхования']) ?>  
         </div>
     </div>
     <div class="row">
         <div class="col-lg-6">
-            <?= $form->field($model, 'phone_aoh')->textInput(['placeholder' => 'Автоопределенный номер с АТС']) ?>
+            <?= $form->field($model, 'phone_aoh')
+                     ->textInput(['placeholder' => 'Автоопределенный номер с АТС',
+                                  'disabled' => 'true']) ?>
         </div>
         <div class="col-lg-6">
             <?= $form->field($model, 'phone_contact')->textInput(['placeholder' => 'Контактный телефон']) ?>

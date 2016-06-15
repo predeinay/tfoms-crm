@@ -127,8 +127,24 @@ class SiteController extends Controller
             $model = Requests::findOne($id);
         } else {
             $model = new Requests();
+            
+            // default data for model
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
-            $model->status_ref_id = refCommon::findOne(['type' => 'Статус обращения', 'text' => 'в работе'])->ref_id;
+            
+            $s =new \yii\web\Session;
+            $model->phone_aoh = $s['phone_aoh'];
+            $defaultStatus = refCommon::findOne( ['type' => 'Статус обращения', 
+                                                  'text' => 'в работе'] );
+            if ($defaultStatus) { $model->status_ref_id = $defaultStatus->ref_id; }
+            
+            $defaultForm = refCommon::findOne( ['type' => 'Форма обращения',
+                                                'text' => 'устно'] );
+            if ($defaultForm) { $model->form_ref_id = $defaultForm->ref_id; }
+            
+            $defaultWay = refCommon::findOne( ['type' => 'Путь поступления',
+                                                'text' => 'По телефону горячей линии'] );
+            if ($defaultWay) { $model->way_ref_id = $defaultWay->ref_id; }
+
         }
 
         //return $this->render('formReqContainer');
@@ -140,7 +156,6 @@ class SiteController extends Controller
                               'modelKind' => refCommon::getRefByName('Вид обращения'),
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
-                              //'modelReason' => refReason::getAll(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
                               'action' => is_null($id) ? 'create' : 'edit']);
         
@@ -241,6 +256,22 @@ class SiteController extends Controller
              'output' =>  $out,
              'selected' => ''
             ]);
+        
+    }
+ 
+    public function actionIsCustomReason() {
+        
+        if (Yii::$app->request->post()['reason_id']) {
+            
+            $reason = refReason::findOne(Yii::$app->request->post());
+            return \yii\helpers\Json::encode(
+                    ['custom_reason_flag' => $reason->custom_text_flag]
+                );
+        }
+        
+        return \yii\helpers\Json::encode(
+                    ['custom_reason_flag' => 0]
+                );
         
     }
     

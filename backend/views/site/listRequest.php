@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'created_on',
                         'label' => 'Дата',
-                        'contentOptions' => ['class' => 'text-wrap'],
+                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width:95px;'],
                     ],
                     [
                         'attribute' => 'fio_polis',
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                        ($model['policy_num'] == '' ? '' : 'Номер ').$model['policy_num']
                                 ;
                         },
-                        'contentOptions' => ['class' => 'text-wrap']  
+                        //'contentOptions' => ['class' => 'text-wrap']  
                     ],
                     /*[   'attribute' => 'way_text',
                         'label' => 'Путь пост.',
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'note',
                         'label' => 'Описание обращения',
-                        'contentOptions' => ['class' => 'text-wrap']  
+                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width: 400px;']  
                     ],
                     [   
                         'attribute' => 'status_text',

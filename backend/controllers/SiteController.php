@@ -15,8 +15,8 @@ use yii\db\Expression;
 class SiteController extends Controller
 {
     
-    const flashText = 'Действие выполнено';
-    const flahErr = 'Действие не выполнено';
+    const FLASH_OK = 'Действие выполнено';
+    const FLASH_ERROR = 'Действие не выполнено';
     
     /**
      * @inheritdoc
@@ -83,7 +83,15 @@ class SiteController extends Controller
         } else {
             $model = new Requests();
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
-            $model->status_ref_id = refCommon::findOne(['type' => 'Статус обращения', 'text' => 'в работе'])->ref_id;
+            
+            // Get default status for new request
+            $defaultStatus = refCommon::findOne(
+                                ['type' => 'Статус обращения', 
+                                 'text' => 'в работе']
+                             );
+            if ($defaultStatus) {
+                $model->status_ref_id = $defaultStatus->ref_id;
+            }
         }
 
         //return $this->render('formReqContainer');
@@ -115,9 +123,9 @@ class SiteController extends Controller
         $model->created_on = new Expression('NOW()');
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',self::flashText);
+            Yii::$app->session->setFlash('success',self::FLASH_OK);
         } else {
-            Yii::$app->session->setFlash('error', self::flahErr);
+            Yii::$app->session->setFlash('error', self::FLASH_ERROR);
         }
         
         return $this->redirect(['/site/index']);
@@ -129,9 +137,9 @@ class SiteController extends Controller
         $model = Requests::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', self::flashErr);
+            Yii::$app->session->setFlash('error', self::FLASH_ERROR);
         } else {
-            Yii::$app->session->setFlash('success', self::flashText);
+            Yii::$app->session->setFlash('success', self::FLASH_OK);
         }
         
         return $this->redirect(['/site/index']);
@@ -144,9 +152,9 @@ class SiteController extends Controller
         if ( $model->load(Yii::$app->request->post()) ) {
             
         if ( $model->validate() && $model->save() ) {
-                Yii::$app->session->setFlash('success', self::flashText);
+                Yii::$app->session->setFlash('success', self::FLASH_OK);
             } else {
-                Yii::$app->session->setFlash('error', self::flahErr);
+                Yii::$app->session->setFlash('error', self::FLASH_ERROR);
             }
         }
         

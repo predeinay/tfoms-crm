@@ -15,6 +15,7 @@ $this->title = 'Список обращений с ' . $s['phone_aoh'];
             <?= Html::a('Добавить обращение', ['/site/form'], 
                         ['class'=>'btn btn-primary',
                          'style' => 'margin-bottom: 15px;']) ?>
+
             
             <?= GridView::widget([
                 'dataProvider' => $provider,
@@ -34,7 +35,7 @@ $this->title = 'Список обращений с ' . $s['phone_aoh'];
                     [
                         'attribute' => 'created_on',
                         'label' => 'Дата',
-                        'contentOptions' => ['class' => 'text-wrap'],
+                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width:95px;'],
                     ],
                     [
                         'attribute' => 'fio_polis',
@@ -47,7 +48,7 @@ $this->title = 'Список обращений с ' . $s['phone_aoh'];
                                        ($model['policy_num'] == '' ? '' : 'Номер ').$model['policy_num']
                                 ;
                         },
-                        'contentOptions' => ['class' => 'text-wrap']  
+                        //'contentOptions' => ['class' => 'text-wrap']  
                     ],
                     /*[   'attribute' => 'way_text',
                         'label' => 'Путь пост.',
@@ -88,7 +89,7 @@ $this->title = 'Список обращений с ' . $s['phone_aoh'];
                     [
                         'attribute' => 'note',
                         'label' => 'Описание обращения',
-                        'contentOptions' => ['class' => 'text-wrap']  
+                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width: 400px;']  
                     ],
                     [   
                         'attribute' => 'status_text',
@@ -110,3 +111,4 @@ $this->title = 'Список обращений с ' . $s['phone_aoh'];
             
             </div>
     </div>
+</div>
