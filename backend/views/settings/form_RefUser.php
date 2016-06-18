@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
 
 $action == 'create' ? $this->title = 'Создание нового пользователя' : $this->title = 'Редактирование пользователя' ;
 
@@ -23,8 +24,14 @@ $this->params['breadcrumbs'][] = $this->title;
     
     ?>
     <?= $form->field($model, 'user_id')->hiddenInput() ?>    
-    <?= $form->field($model, 'user_name')->textInput()->hint('Укажите имя оператора') ?>
+    <?= $form->field($model, 'user_name')->textInput()->hint('Укажите имя пользователя') ?>
     <?= $form->field($model, 'login')->textInput()->hint('Укажите логин пользователя') ?>
+        
+    <?= $form->field($model, 'company_id')
+             ->dropDownList(ArrayHelper::map($companyModel, 'company_id', 'company_name'),
+                     ['prompt' => ' - Укажите организацию'])
+             ->hint('Выберите организацию из списка') ?>
+        
     <?= $form->field($model, 'password')->textInput()->hint('Укажите пароль для входа в систему') ?>
 
     <?= Html::a('Вернуться',['settings/index'],['class'=>'btn']) ?>

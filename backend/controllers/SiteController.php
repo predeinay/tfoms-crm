@@ -1,67 +1,19 @@
 <?php
+
 namespace backend\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use common\models\Requests;
-use backend\models\LoginForm;
-use yii\filters\VerbFilter;
-use common\models\refCommon;
-use common\models\refReason;
-
 use yii\db\Expression;
 
-class SiteController extends Controller
-{
-    
-    const FLASH_OK = 'Действие выполнено';
-    const FLASH_ERROR = 'Действие не выполнено';
-    
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index',
-                                      'form','create','update','delete',
-                                      'main-form',
-                                      'subreason','subresult',
-                                      'is-custom-reason'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
+use backend\controllers\MainController;
+use backend\models\LoginForm;
 
-    /**
-     * @inheritdoc
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-        ];
-    }
+use common\models\refCommon;
+use common\models\refReason;
+use common\models\Requests;
+
+class SiteController extends MainController
+{
 
     public function actionIndex() {
         
@@ -93,8 +45,6 @@ class SiteController extends Controller
                 $model->status_ref_id = $defaultStatus->ref_id;
             }
         }
-
-        //return $this->render('formReqContainer');
         
         return $this->render('form_Req',
                              ['model' => $model,
@@ -107,13 +57,6 @@ class SiteController extends Controller
                               'action' => is_null($id) ? 'create' : 'edit']);
         
     }
-
-    // TODO: Dynamic Tab-X for form Request
-    public function actionMainForm() {
-
-       return \yii\helpers\Json::encode('$html');
-        
-    }
     
     public function actionCreate() {
         
@@ -123,9 +66,9 @@ class SiteController extends Controller
         $model->created_on = new Expression('NOW()');
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',self::FLASH_OK);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', self::FLASH_ERROR);
+            parent::flash(false);
         }
         
         return $this->redirect(['/site/index']);
@@ -137,9 +80,9 @@ class SiteController extends Controller
         $model = Requests::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', self::FLASH_ERROR);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('success', self::FLASH_OK);
+            parent::flash(false);
         }
         
         return $this->redirect(['/site/index']);
@@ -152,9 +95,9 @@ class SiteController extends Controller
         if ( $model->load(Yii::$app->request->post()) ) {
             
         if ( $model->validate() && $model->save() ) {
-                Yii::$app->session->setFlash('success', self::FLASH_OK);
+                parent::flash(true);
             } else {
-                Yii::$app->session->setFlash('error', self::FLASH_ERROR);
+                parent::flash(false);
             }
         }
         

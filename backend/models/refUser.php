@@ -18,7 +18,8 @@ class refUser extends \yii\db\ActiveRecord
             'user_id' => '',
             'login' => 'Логин',
             'password' => 'Пароль',
-            'user_name' => 'Имя пользователя'
+            'user_name' => 'Имя пользователя',
+            'company_id' => 'Организация',
         ];
     }
     
@@ -26,7 +27,7 @@ class refUser extends \yii\db\ActiveRecord
         
         return [
             
-            [['user_name','password','login'], 'required'],
+            [['user_name','password','login','company_id'], 'required'],
             [['user_id'], 'number'],
             
         ];

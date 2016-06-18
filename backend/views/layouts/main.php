@@ -34,29 +34,38 @@ AppAsset::register($this);
             'class' => 'navbar navbar-default navbar-fixed-top',
         ],
     ]);
-    if (!Yii::$app->user->isGuest) {
-        $menuItems = [
-            ['label' => 'Обращения', 'url' => ['/site/index']],
-        ];
-    }
+    
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Вход в систему', 'url' => ['/site/login']];
     } else {
                 
-        $menuItems[] = [
-            'label' =>  Yii::$app->user->identity->user_name ,
-            'items' => [
+        $menuItems = [
                     [
-                        'label' => 'Настройки',
-                        'url' => ['/settings/index'],
+                        'label' => 'Обращения', 
+                        'url' => ['/site/index'],
+                        'active' => in_array(
+                                    $this->context->route, 
+                                        ['site/index','site/form']),
                     ],
-                    [
-                        'label' => 'Выйти из системы',
+        ];
+        
+        if (Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id )) {
+            
+            $menuItems[] = [
+                            'label' => 'Настройки',
+                            'url' => ['/settings/index'],
+                            'active' => in_array(
+                                    $this->context->route, 
+                                        ['settings/index','settings/reasons','settings/commons','settings/company',
+                                         'settings/user-form','settings/reason-form','settings/common-form','settings/company-form']),
+                        ];
+        }
+        
+        $menuItems[] = [
+                        'label' => 'Выйти ('.Yii::$app->user->identity->user_name.')',
                         'url' => ['/site/logout'],
                         'linkOptions' => ['data-method' => 'post']
-                    ],
-                ],
-        ];
+                    ];
     }
     
     echo Nav::widget([

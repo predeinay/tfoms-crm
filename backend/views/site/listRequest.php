@@ -2,9 +2,11 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use kartik\date\DatePicker;
 
 $this->title = 'Список обращений';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
 <div class="site-index">
@@ -14,8 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a('Добавить обращение', ['/site/form'], 
                         ['class'=>'btn btn-primary',
                          'style' => 'margin-bottom: 15px;']) ?>
-
             
+            <?php
+              $searchDay = '';
+              if ( key_exists('RequestsSearch', $_GET) ) {
+                  $searchDay = $_GET['RequestsSearch']['created_on'];
+              }
+            ?>
+                
             <?= GridView::widget([
                 'dataProvider' => $provider,
                 'filterModel' => $searchModel,
@@ -35,6 +43,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'created_on',
                         'label' => 'Дата',
                         'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width:95px;'],
+                        'filter' => '<div style="width: 140px;">'.DatePicker::widget([
+                                        'options' => [ 'placeholder' => 'Дата обращения', 'class' => 'form-control'],
+                                        'name' => 'RequestsSearch[created_on]',
+                                        'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                                        'removeButton' => false,
+                                        'value' => $searchDay,
+                                        'pluginOptions' => [
+                                            'autoclose' => true,
+                                            'format' => 'yyyy-mm-dd',
+                                        ]
+                                    ]).'</div>',
                     ],
                     [
                         'attribute' => 'fio_polis',

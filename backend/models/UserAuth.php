@@ -10,8 +10,8 @@ class UserAuth extends ActiveRecord implements IdentityInterface
 {
  
     // Роли пользователей
-    const FUND_USER = 100;
-    const INSURED_USER = 10;
+    const FUND_USER = 'ТФОМС';
+    const INSURED_USER = 'СМО';
 
     /**
      * @inheritdoc
@@ -67,4 +67,24 @@ class UserAuth extends ActiveRecord implements IdentityInterface
         return $this->password === $password;
     }
 
+    public function isTfomsRole($id) {
+        
+        $query = new \yii\db\Query();
+        $orgType = $query->select('com.text')
+                         ->from('ref_users u')
+                         ->innerJoin('ref_company cnt','u.company_id = cnt.company_id')
+                         ->innerJoin('ref_common com', 'cnt.type_ref_id = com.ref_id')
+                         ->where(['user_id' => $id])->one();
+        
+        if ($orgType) {
+            if ($orgType['text'] == 'ТФОМС') {
+                return true;
+            } else 
+                return false;
+        }
+        
+        return true;
+        
+    }
+    
 }

@@ -2,71 +2,19 @@
 namespace backend\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use backend\models\refUser;
 use yii\data\ActiveDataProvider;
-use yii\filters\VerbFilter;
+
+use backend\controllers\MainController;
+use backend\models\refUser;
+use backend\models\refCommonSearch;
+use backend\models\refReasonSearch;
 
 use common\models\refReason;
 use common\models\refCommon;
 use common\models\refCompany;
-use backend\models\refCommonSearch;
-use backend\models\refReasonSearch;
 
-/**
- * Site controller
- */
-
-class SettingsController extends Controller
+class SettingsController extends MainController
 {
-    
-    public $flashText = 'Действие выполнено';
-    public $flahErr = 'Действие не выполнено';
-    public $defaultPageSize = 50;
-    
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-
-                    [
-                        'actions' => ['logout', 
-                                      'index','reasons','commons','company',
-                                      'user-form','user-create','user-update','user-delete',
-                                      'reason-form','reason-create','reason-update','reason-delete',
-                                      'common-form','common-create','common-update','common-delete',
-                                      'company-form','company-create','company-update','company-delete',],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-        ];
-    }
 
     public function actionIndex()
     {
@@ -75,7 +23,7 @@ class SettingsController extends Controller
         $provider = new ActiveDataProvider([
                         'query' => $userModel,
                         'pagination' => [
-                            'pageSize' => $this->defaultPageSize,
+                                'pageSize' => parent::PAGINATION_SIZE,
                         ],
                     ]);
 
@@ -94,8 +42,11 @@ class SettingsController extends Controller
             $model = new refUser();
         }
         
+        $companyModel = refCompany::find();
+        
         return $this->render('form_RefUser',
                              ['model' => $model,
+                              'companyModel' => $companyModel->all(),
                               'action' => is_null($id) ? 'create' : 'edit']
                             );
     }
@@ -105,9 +56,9 @@ class SettingsController extends Controller
         $model = new refUser();
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',$this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/index']);
@@ -119,9 +70,9 @@ class SettingsController extends Controller
         $model = refUser::findOne($id);
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/index']);
@@ -133,9 +84,9 @@ class SettingsController extends Controller
         $model = refUser::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/index']);
@@ -176,9 +127,9 @@ class SettingsController extends Controller
         $model = new refReason();
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',$this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/reasons']);
@@ -190,9 +141,9 @@ class SettingsController extends Controller
         $model = refReason::findOne($id);
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/reasons']);
@@ -204,9 +155,9 @@ class SettingsController extends Controller
         $model = refReason::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/reasons']);
@@ -245,9 +196,9 @@ class SettingsController extends Controller
         $model = new refCommon();
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',$this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/commons']);
@@ -259,9 +210,9 @@ class SettingsController extends Controller
         $model = refCommon::findOne($id);
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/commons']);
@@ -273,9 +224,9 @@ class SettingsController extends Controller
         $model = refCommon::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/commons']);
@@ -288,7 +239,7 @@ class SettingsController extends Controller
         $provider = new ActiveDataProvider([
                         'query' => $model,
                         'pagination' => [
-                            'pageSize' => $this->defaultPageSize,
+                            'pageSize' => parent::PAGINATION_SIZE,
                         ],
                     ]);
         
@@ -319,9 +270,9 @@ class SettingsController extends Controller
         $model = new refCompany();
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success',$this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/company']);
@@ -333,9 +284,9 @@ class SettingsController extends Controller
         $model = refCompany::findOne($id);
         
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/company']);
@@ -347,9 +298,9 @@ class SettingsController extends Controller
         $model = refCompany::findOne($id);
         
         if (!$model->delete()) {
-            Yii::$app->session->setFlash('error', $this->flashErr);
+            parent::flash(true);
         } else {
-            Yii::$app->session->setFlash('success', $this->flashText);
+            parent::flash(false);
         }
         
         return $this->redirect(['/settings/company']);
