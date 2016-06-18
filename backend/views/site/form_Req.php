@@ -61,9 +61,35 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
 <div class="row">
     <div class="col-lg-12">
-        <!--h3><?= $this->title.' '.$model->req_id ?></h3-->
         <h3><?= $this->title.' '.(isset($model->req_id) ? '#'.$model->req_id :'') ?></h3>
-    </div>    
+    </div>
+    
+    <div class="col-lg-12">
+        <?php if ( $action == 'create' ) {} else {
+            
+            echo Nav::widget([
+                'items' => [
+                    [ 
+                      'label' => '<span class="glyphicon glyphicon-folder-open"></span> Общая информация',
+                      'url' => ['/request/form'],
+                    ],
+                    [ 
+                      'label' => '<span class="glyphicon glyphicon-comment"></span> Комментарии',
+                      'url' => ['/request/comments'],
+                    ],
+                    [ 
+                      'label' => '<span class="glyphicon glyphicon-headphones"></span> Записи разговоров',
+                      'url' => ['/request/records'],
+                    ],
+                ],
+    
+                'options' => ['class' =>'nav nav-tabs'],
+                'encodeLabels' => false,
+             ]);
+            }
+            ?>
+    </div>
+    </div>
     
     <?php
 
@@ -73,7 +99,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     ?>
     
     <?= $form->field($model, 'req_id')->hiddenInput() ?>
-    
+   
     <div class="col-sm-5">
     
     <?= $form->field($model, 'created_on')

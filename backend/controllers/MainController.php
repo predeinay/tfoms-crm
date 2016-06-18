@@ -25,6 +25,13 @@ class MainController extends Controller
                         'allow' => true,
                     ],
                     [
+                        'controllers' => ['request'],
+                        'actions' => ['form','comments','records'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    
+                    [
                         'controllers' => ['site'],
                         'actions' => ['logout', 'index',
                                       'form','create','update','delete',

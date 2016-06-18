@@ -56,7 +56,7 @@ class SiteController extends MainController
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
                               'action' => is_null($id) ? 'create' : 'edit']);
         
-    }
+    }    
     
     public function actionCreate() {
         

@@ -43,17 +43,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'created_on',
                         'label' => 'Дата',
                         'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width:95px;'],
-                        'filter' => '<div style="width: 140px;">'.DatePicker::widget([
+                        'filter' => DatePicker::widget([
                                         'options' => [ 'placeholder' => 'Дата обращения', 'class' => 'form-control'],
                                         'name' => 'RequestsSearch[created_on]',
-                                        'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                                        'type' => DatePicker::TYPE_INPUT,//::TYPE_COMPONENT_APPEND,
                                         'removeButton' => false,
                                         'value' => $searchDay,
                                         'pluginOptions' => [
                                             'autoclose' => true,
                                             'format' => 'yyyy-mm-dd',
                                         ]
-                                    ]).'</div>',
+                                    ]),
                     ],
                     [
                         'attribute' => 'fio_polis',
@@ -112,6 +112,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     [   
                         'attribute' => 'status_text',
                         'label' => 'Статус',
+                        'content' => function($model, $key, $index, $column) {
+                                    return $model['status_text'] == 'закрыто'?
+                                             '<b><span class="label label-success">'.$model['status_text'].'</span></b>':
+                                             '<b><span class="label label-info">'.$model['status_text'].'</span></b>';
+                                },
                         'filter' => Html::activeDropDownList(
                                         $searchModel,
                                         'status_ref_id',

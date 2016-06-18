@@ -28,7 +28,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'Учет обращений граждан',
+        'brandLabel' => '<span class="glyphicon glyphicon-th-large"></span> Обращения граждан',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar navbar-default navbar-fixed-top',
@@ -41,7 +41,7 @@ AppAsset::register($this);
                 
         $menuItems = [
                     [
-                        'label' => 'Обращения', 
+                        'label' => '<span class="glyphicon glyphicon-list-alt"></span> Обращения', 
                         'url' => ['/site/index'],
                         'active' => in_array(
                                     $this->context->route, 
@@ -52,7 +52,7 @@ AppAsset::register($this);
         if (Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id )) {
             
             $menuItems[] = [
-                            'label' => 'Настройки',
+                            'label' => '<span class="glyphicon glyphicon-cog"></span> Настройки',
                             'url' => ['/settings/index'],
                             'active' => in_array(
                                     $this->context->route, 
@@ -62,15 +62,16 @@ AppAsset::register($this);
         }
         
         $menuItems[] = [
-                        'label' => 'Выйти ('.Yii::$app->user->identity->user_name.')',
+                        'label' => '<span class="glyphicon glyphicon-user"></span> Выйти ('.Yii::$app->user->identity->user_name.')',
                         'url' => ['/site/logout'],
-                        'linkOptions' => ['data-method' => 'post']
+                        'linkOptions' => ['data-method' => 'post'],
                     ];
     }
     
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
+        'encodeLabels' => false,
     ]);
     NavBar::end();
     ?>
