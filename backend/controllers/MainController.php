@@ -7,6 +7,8 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
+use backend\models\LoginForm;
+
 class MainController extends Controller
 {
     
@@ -25,8 +27,19 @@ class MainController extends Controller
                         'allow' => true,
                     ],
                     [
+                        'controllers' => ['main'],
+                        'actions' => ['logout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
                         'controllers' => ['request'],
-                        'actions' => ['form','comments','records'],
+                        'actions' => ['form','list',
+                                      'create','update','delete',
+                                      // ajax actions
+                                      'subreason','subresult','is-custom-reason',
+                                      // add relation actions
+                                      'comments','records'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -81,5 +94,30 @@ class MainController extends Controller
             Yii::$app->session->setFlash('error', self::FLASH_ERROR);
         }
     
+    }
+    
+    public function actionLogin()
+    {
+        
+        if (!\Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new LoginForm();
+        
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            return $this->goBack();
+        } else {
+            return $this->render('login', [
+                'model' => $model,
+            ]);
+        }
+    }
+    
+    public function actionLogout()
+    {
+        Yii::$app->user->logout();
+
+        return $this->goHome();
     }
 }

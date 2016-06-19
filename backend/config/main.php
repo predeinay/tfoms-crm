@@ -18,6 +18,7 @@ return [
             //'identityClass' => 'common\models\User',
 	    'identityClass' => 'backend\models\UserAuth',
             'enableAutoLogin' => false,
+            'loginUrl' => ['main/login'], 
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -29,7 +30,7 @@ return [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'main/error',
         ],
         /*
         'urlManager' => [
@@ -41,4 +42,5 @@ return [
         */
     ],
     'params' => $params,
+    'defaultRoute' => 'request/list',
 ];

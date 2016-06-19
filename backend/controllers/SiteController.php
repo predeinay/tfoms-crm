@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace backend\controllers;
 
 use Yii;
@@ -188,3 +188,4 @@ class SiteController extends MainController
     
     
 }
+*/

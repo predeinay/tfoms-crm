@@ -36,16 +36,16 @@ AppAsset::register($this);
     ]);
     
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Вход в систему', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => 'Вход в систему', 'url' => ['/main/login']];
     } else {
                 
         $menuItems = [
                     [
                         'label' => '<span class="glyphicon glyphicon-list-alt"></span> Обращения', 
-                        'url' => ['/site/index'],
+                        'url' => ['/request/list'],
                         'active' => in_array(
                                     $this->context->route, 
-                                        ['site/index','site/form']),
+                                        ['request/list','request/form','request/comments','request/records']),
                     ],
         ];
         
@@ -63,7 +63,7 @@ AppAsset::register($this);
         
         $menuItems[] = [
                         'label' => '<span class="glyphicon glyphicon-user"></span> Выйти ('.Yii::$app->user->identity->user_name.')',
-                        'url' => ['/site/logout'],
+                        'url' => ['/main/logout'],
                         'linkOptions' => ['data-method' => 'post'],
                     ];
     }
