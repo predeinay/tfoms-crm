@@ -27,6 +27,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= GridView::widget([
                 'dataProvider' => $provider,
                 'filterModel' => $searchModel,
+                'rowOptions' => function ($model, $key, $index, $grid) {
+                                    if ($model['status_text'] == 'В работе') {
+                                        return ['class' => 'grid-yellow'];
+                                    }
+                                },
                 'columns' => [
                     [ 
                         'class' => 'yii\grid\ActionColumn',
@@ -114,8 +119,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => 'Статус',
                         'content' => function($model, $key, $index, $column) {
                                     return $model['status_text'] == 'закрыто'?
-                                             '<b><span class="label label-success">'.$model['status_text'].'</span></b>':
-                                             '<b><span class="label label-info">'.$model['status_text'].'</span></b>';
+                                             '<b><span class="label label-default">'.$model['status_text'].'</span></b>':
+                                             '<b><span class="label label-warning">'.$model['status_text'].'</span></b>';
                                 },
                         'filter' => Html::activeDropDownList(
                                         $searchModel,

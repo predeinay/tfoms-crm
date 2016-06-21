@@ -11,6 +11,7 @@ use yii\widgets\ActiveForm;
 use kartik\widgets\DatePicker;
 use kartik\widgets\DateTimePicker;
 use kartik\widgets\DepDrop;
+use kartik\widgets\Select2;
 
 $action == 'create' ? $this->title = 'Создание нового обращения' : $this->title = 'Редактирование обращения' ;
 
@@ -205,7 +206,10 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                                 ['placeholder' => 'Укажите текстовое описание обращения',
                                  'rows' => 3 ]) 
     ?>
-        
+    
+    <?= $form->field($model, 'company_id')->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
+                            ['prompt' => '- Укажите органиазацию - ']) ?>
+
     <?= $form->field($model, 'final_note')->textarea(
                                 ['placeholder' => 'Укажите принятые меры',
                                  'rows' => 3 ]) 
@@ -223,7 +227,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
         
     <?php
     if ($action == 'create') {
-        echo Html::submitButton('Создать обращение', ['class' => 'btn btn-primary']); 
+        echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']); 
     }
       else {
         echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);

@@ -123,3 +123,11 @@ a.desc:after {
     padding-left: 30px;
     padding-right: 20px;
 }
+
+.grid-yellow {
+    background-color: #F9F9AD !important;
+}
+
+.grid-gray {
+    background-color: silver !important;
+}

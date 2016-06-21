@@ -6,6 +6,8 @@ use common\models\Requests;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
 
+use Yii;
+
 class RequestsSearch extends Requests {
     
     public $note;
@@ -48,6 +50,11 @@ class RequestsSearch extends Requests {
               ->innerJoin('ref_common kind','r.kind_ref_id = kind.ref_id')
               ->innerJoin('ref_common form','r.form_ref_id = form.ref_id')
               ->leftJoin('ref_common status','r.status_ref_id = status.ref_id');
+        
+              if ( Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id ) ) {} 
+                else {
+                    $query->where(['r.company_id' => Yii::$app->user->identity->company_id]);
+                }
         
         $provider = new ActiveDataProvider([
                         'query' => $query,

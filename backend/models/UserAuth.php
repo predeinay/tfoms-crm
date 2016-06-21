@@ -79,8 +79,9 @@ class UserAuth extends ActiveRecord implements IdentityInterface
         if ($orgType) {
             if ($orgType['text'] == 'ТФОМС') {
                 return true;
-            } else 
+            } else {
                 return false;
+            }
         }
         
         return true;

@@ -43,8 +43,8 @@ class Requests extends \yii\db\ActiveRecord
             'phone_contact' => 'Контактный телефон',
             'phone_aoh_private' => 'Служебный телефон',
             
-            'smo_company_id' => 'Страховая компания',
-            'final_note' => 'Принятые меры'
+            'final_note' => 'Принятые меры',
+            'company_id' => 'Зона ответственности',
         ];
     }
     
@@ -58,8 +58,8 @@ class Requests extends \yii\db\ActiveRecord
             [['phone_aoh','phone_contact'],'string','max' => 12],
             [['birth_day'], 'date' , 'format' => 'php:Y-m-d' ],
             [['created_on'], 'date' , 'format' => 'yyyy-M-d H:m:s' ],
-            [['smo_company_id'],'number'],
             [['phone_aoh_private'],'string', 'max' => 1],
+            [['company_id'],'number'],
             [['created_by','result_ref_id'], 'safe']
             
         ];

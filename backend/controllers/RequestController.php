@@ -12,6 +12,7 @@ use common\models\refCommon;
 use common\models\refReason;
 use common\models\Requests;
 use common\models\reqComment;
+use common\models\refCompany;
 
 class RequestController extends MainController {
     
@@ -55,6 +56,7 @@ class RequestController extends MainController {
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
+                              'modelCompany' => refCompany::find()->all(),
                               'action' => is_null($id) ? 'create' : 'edit']);
     }
     
