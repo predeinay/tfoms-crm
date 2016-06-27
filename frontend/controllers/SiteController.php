@@ -6,7 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-
+use common\models\refCompany;
 use frontend\models\Call;
 use yii\db\Expression;
 use common\models\Requests;
@@ -81,7 +81,7 @@ class SiteController extends Controller
     {
         $s = new \yii\web\Session();
         
-        $searchModel = new \backend\models\RequestsSearch;
+        $searchModel = new \frontend\models\RequestsSearch;
         $provider = $searchModel->search(Yii::$app->request->get());
         
         //       ->where(['phone_aoh' => $s['phone_aoh'] ]);
@@ -157,6 +157,7 @@ class SiteController extends Controller
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
+                              'modelCompany' => refCompany::find()->all(),
                               'action' => is_null($id) ? 'create' : 'edit']);
         
     }

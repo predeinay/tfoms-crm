@@ -196,6 +196,9 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                                  'rows' => 3 ]) 
     ?>
         
+    <?= $form->field($model, 'company_id')->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
+                            ['prompt' => '- Укажите органиазацию - ']) ?>
+        
     <?= $form->field($model, 'final_note')->textarea(
                                 ['placeholder' => 'Укажите принятые меры',
                                  'rows' => 3 ]) 
