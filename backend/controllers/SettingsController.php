@@ -18,8 +18,11 @@ class SettingsController extends MainController
 
     public function actionIndex()
     {
-        $userModel = refUser::find();
         
+        $userModel = refUser::find()
+                       ->select('user_id,login,user_name,company_name')
+                       ->leftJoin('ref_company', 'ref_company.company_id = ref_users.company_id');
+
         $provider = new ActiveDataProvider([
                         'query' => $userModel,
                         'pagination' => [
@@ -27,6 +30,11 @@ class SettingsController extends MainController
                         ],
                     ]);
 
+        
+        $provider->sort->attributes['company_name'] = [
+                'asc' => ['company_name' => SORT_ASC],
+                'desc' => ['company_name' => SORT_DESC],
+            ];
         
         return $this->render('list_RefUsers',[
             'provider' => $provider

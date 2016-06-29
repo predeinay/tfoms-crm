@@ -44,6 +44,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     [   'attribute' => 'login',
                         'label' => 'Логин',
                     ],
+                    [   'attribute' => 'company_name',
+                        'label' => 'Компания',
+                    ],
                 ]
                 ]);
                 ?>

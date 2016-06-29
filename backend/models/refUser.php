@@ -4,6 +4,9 @@ namespace backend\models;
 
 class refUser extends \yii\db\ActiveRecord
 {    
+    // Название компании в которой работает
+    public $company_name;
+    
     /**
      * @inheritdoc
      */

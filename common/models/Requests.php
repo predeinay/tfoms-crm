@@ -5,6 +5,17 @@ namespace common\models;
 class Requests extends \yii\db\ActiveRecord
 {    
     
+    // relations data for ListView
+    public $user_name;
+    public $company_name;
+    public $status_text;
+    public $form_text;
+    public $way_text;
+    public $kind_text;
+    public $reason_text;
+    public $result_text;
+    
+    
     public static function tableName()
     {
         return 'requests';

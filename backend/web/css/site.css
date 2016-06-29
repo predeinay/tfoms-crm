@@ -12,6 +12,12 @@ body {
 
 .wrap > .container {
     padding: 70px 15px 20px;
+    background-color: #f8f8f8; // Main background color
+}
+
+.footer > .container {
+    padding-left: 0px;
+    margin-left: 20px;
 }
 
 .footer {
@@ -125,9 +131,19 @@ a.desc:after {
 }
 
 .grid-yellow {
-    background-color: #F9F9AD !important;
+    background-color: #FFFFC9 !important;
 }
 
 .grid-gray {
     background-color: silver !important;
+}
+
+.req-edit-link {
+    text-decoration: none;
+    color: #000;
+    //font-size:1.1em;
+}
+
+.req-list-footer {
+    font-size: 0.9em;
 }
