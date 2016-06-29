@@ -42,6 +42,11 @@ class RequestController extends MainController {
                     ->orderBy('created_on desc')
                     ;
         
+                if ( Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id ) ) {} 
+                else {
+                    $reqModel->where(['requests.company_id' => Yii::$app->user->identity->company_id]);
+                }
+        
         $provider = new ActiveDataProvider([
                         'query' => $reqModel,
                         'pagination' => [
