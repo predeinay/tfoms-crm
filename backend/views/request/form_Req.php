@@ -207,8 +207,17 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                                  'rows' => 3 ]) 
     ?>
     
-    <?= $form->field($model, 'company_id')->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
-                            ['prompt' => '- Укажите органиазацию - ']) ?>
+        
+        
+    <?php
+      if (Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id )) {
+        echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
+                            [ 'prompt' => '- Укажите организацию - ' ]
+            );
+      } else {
+       echo $form->field($model, 'company_id')->hiddenInput()->label('');
+      }
+    ?>
 
     <?= $form->field($model, 'final_note')->textarea(
                                 ['placeholder' => 'Укажите принятые меры',

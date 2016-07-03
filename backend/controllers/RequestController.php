@@ -72,6 +72,7 @@ class RequestController extends MainController {
         } else {
             $model = new Requests();
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
+            $model->company_id = Yii::$app->user->identity->company_id;
             
             // Get default status for new request
             $defaultStatus = refCommon::findOne(
