@@ -60,6 +60,8 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
 <div class="container-fluid">
 
+<!-- Tabs -->
+
 <div class="row">
     <!--div class="col-lg-12">
         <h3><?= $this->title.' '.(isset($model->req_id) ? '#'.$model->req_id :'') ?></h3>
@@ -74,14 +76,18 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
             }
         ?>
     </div>
-    </div>
+</div>
     
+<!-- Form begin -->
     <?php
 
     $form = ActiveForm::begin([
         'action' => $action == 'create' ? ['request/create'] : ['request/update','id' => $model->req_id ]
     ]);
     ?>
+
+<div class="row">  
+    <div class="col-lg-12">
     
     <?= $form->field($model, 'req_id')->hiddenInput() ?>
    
@@ -224,28 +230,33 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                                  'rows' => 3 ]) 
     ?>
     </div>
-    
-    <div class="row">
-        <div class="col-lg-12">
-    <?= Html::a('Вернуться',['request/list'],['class'=>'btn']) ?>
-    <?php
-        if (!is_null($model->req_id)) {
-            echo Html::a('Удалить',['request/delete', 'id' => $model->req_id],['class'=>'btn btn-default']);
+    </div>
+</div>
+
+<!-- form footer -->
+<div class="row">
+    <div class="col-lg-12">
+        <?= Html::a('Вернуться',['request/list'],['class'=>'btn']) ?>
+        <?php
+            if (!is_null($model->req_id)) {
+                echo Html::a('Удалить',['request/delete', 'id' => $model->req_id],['class'=>'btn btn-default']);
+            }
+        ?>    
+
+        <?php
+        if ($action == 'create') {
+            echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']); 
         }
-    ?>    
-        
-    <?php
-    if ($action == 'create') {
-        echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']); 
-    }
-      else {
-        echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);
-    }
-    
-    ?>
-   
-        </div>
-    </div>
-    <?php ActiveForm::end() ?> 
-    </div>
+          else {
+            echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);
+        }
+
+        ?>
+
+            <!--/div>
+        </div-->
+  </div>      
+ </div>
+
+<?php ActiveForm::end() ?> 
 </div>
