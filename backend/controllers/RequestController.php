@@ -13,54 +13,32 @@ use common\models\refReason;
 use common\models\Requests;
 use common\models\reqComment;
 use common\models\refCompany;
+use common\models\refUser;
 use yii\data\ActiveDataProvider;
+
+use backend\models\requestSearch;
 
 class RequestController extends MainController {
 
     // Список обращений
     public function actionList() {
 
-        $reqModel = Requests::find()
-                    ->select('req_id, created_on, user_name, company_name, status.text as status_text,
-                              surname, name, patronymic, address,
-                              note,
-                              result.text as result_text,
-                              form.text as form_text,
-                              way.text as way_text,
-                              kind.text as kind_text,
-                              ref_reasons.reason_text
-                              ')
-                    ->innerJoin('ref_users', 'requests.created_by = ref_users.user_id')
-                    ->leftJoin('ref_company', 'requests.company_id = ref_company.company_id')
-                    ->innerJoin('ref_common status', 'requests.status_ref_id = status.ref_id' )
-                    ->innerJoin('ref_common form', 'requests.form_ref_id = form.ref_id' )
-                    ->innerJoin('ref_common way', 'requests.way_ref_id = way.ref_id' )
-                    ->innerJoin('ref_common kind', 'requests.kind_ref_id = kind.ref_id' )
-                    ->leftJoin('ref_common result', 'requests.result_ref_id = result.ref_id' )
-                    ->innerJoin('ref_reasons', 'requests.reason_id = ref_reasons.reason_id' )
-
-                    ->orderBy('created_on desc')
-                    ;
-
-                if ( Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id ) ) {}
-                else {
-                    $reqModel->where(['requests.company_id' => Yii::$app->user->identity->company_id]);
-                }
-
-        $provider = new ActiveDataProvider([
-                        'query' => $reqModel,
-                        'pagination' => [
-                            'pageSize' => 20,
-                        ],
-                    ]);
-
-        /*$searchModel = new \backend\models\RequestsSearch;
-        $provider = $searchModel->search(Yii::$app->request->get());*/
+        $reqSearchModel = new requestSearch();
+        // pass get arr for filtering
+        $provider = $reqSearchModel->search( Yii::$app->request->get() );
 
         return $this->render(
                     'list_view_Reqs',
                     ['provider' => $provider,
-                     /*'searchModel' => $searchModel*/ ]
+                     'searchModel' => $reqSearchModel,
+                     'modelCompany' => refCompany::find()->all(),
+                     'modelStatus' => refCommon::getRefByName('Статус обращения'),
+                     'modelForm' => refCommon::getRefByName('Форма обращения'),
+                     'modelWay' => refCommon::getRefByName('Путь поступления'),
+                     'modelKind' => refCommon::getRefByName('Вид обращения'),
+                     'modelUser' => refUser::getAll(),
+                     'modelReason' => refReason::findAll(['kind_ref_id' => $reqSearchModel->kind_ref_id]),
+                    ]
                 );
     }
 

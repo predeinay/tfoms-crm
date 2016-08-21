@@ -3,8 +3,8 @@
 namespace common\models;
 
 class Requests extends \yii\db\ActiveRecord
-{    
-    
+{
+
     // relations data for ListView
     public $user_name;
     public $company_name;
@@ -14,23 +14,23 @@ class Requests extends \yii\db\ActiveRecord
     public $kind_text;
     public $reason_text;
     public $result_text;
-    
-    
+
+
     public static function tableName()
     {
         return 'requests';
     }
-    
+
     public function attributeLabels()
     {
         return [
-            
+
             'req_id' => '',
-            
+
             'created_on' => 'Дата поступления',
-            'created_by' => 'Кто создал',
+            'created_by' => 'Кто создал обращение',
             'record' => 'Запись разговора',
-            
+
             'birth_day' => 'Дата рождения',
             'address' => 'Адрес обратившегося',
             'reason_id' => 'Суть обращения',
@@ -40,27 +40,27 @@ class Requests extends \yii\db\ActiveRecord
             'way_ref_id' => 'Путь поступления',
             'result_ref_id' => 'Результат',
             'status_ref_id' => 'Статус',
-            
+
             'note' => 'Описание обращения',
-            
+
             'surname' => 'Фамилия',
             'patronymic' => 'Отчество',
             'name' => 'Имя',
-            
+
             'policy_num' => 'Номер полиса',
             'policy_ser' => 'Серия полиса',
-            
+
             'phone_aoh' => 'АОН',
             'phone_contact' => 'Контактный телефон',
             'phone_aoh_private' => 'Служебный телефон',
-            
+
             'final_note' => 'Принятые меры',
             'company_id' => 'Зона ответственности',
         ];
     }
-    
+
     public function rules() {
-        
+
         return [
             [['created_on','reason_id','form_ref_id','kind_ref_id','way_ref_id','status_ref_id'], 'required'],
             [['address','note','final_note','reason_custom_text'], 'string', 'max' => 512],
@@ -72,9 +72,9 @@ class Requests extends \yii\db\ActiveRecord
             [['phone_aoh_private'],'string', 'max' => 1],
             [['company_id'],'number'],
             [['created_by','result_ref_id'], 'safe']
-            
+
         ];
-        
+
     }
-    
+
 }

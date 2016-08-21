@@ -10,5 +10,8 @@ return [
         'formatter' => [
                 'nullDisplay' => '&nbsp;',
         ],
+        'myhelper' => [
+            'class' => 'common\components\myhelper',
+            ],
     ],
 ];

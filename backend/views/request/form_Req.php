@@ -20,14 +20,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $js = '
   function getReasonCustomFlag() {
-  
+
         var l_reason_id = $("#requests-reason_id").val();
-        
+
         $.ajax({
             url: "'.Url::toRoute('request/is-custom-reason').'" ,
             data: { reason_id : l_reason_id },
             type: "post",
-            success: function(data) { 
+            success: function(data) {
                         if (data) {
                             var jsonObj = JSON.parse(data);
                             if ( jsonObj.custom_reason_flag == 1 ) {
@@ -35,14 +35,14 @@ $js = '
                             } else {
                                 $("#requests-reason_custom_text").parent().hide();
                             }
-                            
+
                         }
                      }
             });
   }
 
   $("#requests-reason_id").on("change", function(event) {
-  
+
       getReasonCustomFlag();
 
    });
@@ -50,7 +50,7 @@ $js = '
   function init() {
       getReasonCustomFlag();
   }
-  
+
   init();
 ';
 
@@ -66,9 +66,9 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     <!--div class="col-lg-12">
         <h3><?= $this->title.' '.(isset($model->req_id) ? '#'.$model->req_id :'') ?></h3>
     </div-->
-    
+
     <div class="col-lg-12">
-        <?php 
+        <?php
             if ( $action == 'create' ) {} else {
 
                 echo $this->render('form_Tabs',['req_id' => $model->req_id ]);
@@ -77,7 +77,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
         ?>
     </div>
 </div>
-    
+
 <!-- Form begin -->
     <?php
 
@@ -86,13 +86,13 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     ]);
     ?>
 
-<div class="row">  
+<div class="row">
     <div class="col-lg-12">
-    
+
     <?= $form->field($model, 'req_id')->hiddenInput() ?>
-   
+
     <div class="col-sm-5">
-    
+
     <?= $form->field($model, 'created_on')
               ->widget(DateTimePicker::className(),
                 [
@@ -111,17 +111,17 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
     <?= $form->field($model, 'form_ref_id')
              ->dropDownList(ArrayHelper::map( $modelForm , 'ref_id' , 'text'),
-                            ['prompt' => '- Укажите форму обращения - ']) ?>    
-        
+                            ['prompt' => '- Укажите форму обращения - ']) ?>
+
     <?= $form->field($model, 'way_ref_id')
              ->dropDownList(ArrayHelper::map( $modelWay , 'ref_id' , 'text'),
-                             ['prompt' => '- Укажите путь поступления -']) ?> 
+                             ['prompt' => '- Укажите путь поступления -']) ?>
 
     <?= $form->field($model, 'kind_ref_id')
              ->dropDownList(ArrayHelper::map( $modelKind,'ref_id','text'),
                             [ 'id' => 'kind_ref_id',
-                             'prompt' => '- Укажите вид обращения -']) ?> 
-        
+                             'prompt' => '- Укажите вид обращения -']) ?>
+
     <?= $form->field($model, 'reason_id')
              ->widget(DepDrop::classname(), [
                     'type'=>DepDrop::TYPE_SELECT2,
@@ -135,9 +135,9 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                     ],
 
                 ]); ?>
-    
+
     <?= $form->field($model,'reason_custom_text')->textarea() ?>
-        
+
     <?= $form->field($model, 'result_ref_id')
              ->widget(DepDrop::classname(), [
                     //'type'=>DepDrop::TYPE_SELECT2,
@@ -150,11 +150,11 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                         //'initialize' => true
                     ]
                 ]); ?>
-        
+
     <?= $form->field($model, 'status_ref_id')
              ->dropDownList(ArrayHelper::map( $modelStatus , 'ref_id' , 'text'),
-                            ['prompt' => '- Укажите статус - ']) ?>    
-        
+                            ['prompt' => '- Укажите статус - ']) ?>
+
     </div>
     <div class="col-sm-7">
     <div class="row">
@@ -162,10 +162,10 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
             <?= $form->field($model, 'surname')->textInput(['placeholder' => 'Укажите фамилию']) ?>
         </div>
         <div class="col-sm-4">
-            <?= $form->field($model, 'name')->textInput(['placeholder' => 'Укажите имя']) ?>  
+            <?= $form->field($model, 'name')->textInput(['placeholder' => 'Укажите имя']) ?>
         </div>
         <div class="col-sm-4">
-            <?= $form->field($model, 'patronymic')->textInput(['placeholder' => 'Укажите отчество']) ?>  
+            <?= $form->field($model, 'patronymic')->textInput(['placeholder' => 'Укажите отчество']) ?>
         </div>
     </div>
     <div class="row">
@@ -185,11 +185,11 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                 ])
         ?>
         </div>
-        <div class="col-sm-4">    
-            <?= $form->field($model, 'policy_ser')->textInput(['placeholder' => 'Серия полиса']) ?>  
+        <div class="col-sm-4">
+            <?= $form->field($model, 'policy_ser')->textInput(['placeholder' => 'Серия полиса']) ?>
         </div>
         <div class="col-sm-4">
-            <?= $form->field($model, 'policy_num')->textInput(['placeholder' => 'Номер полиса страхования']) ?>  
+            <?= $form->field($model, 'policy_num')->textInput(['placeholder' => 'Номер полиса страхования']) ?>
         </div>
     </div>
     <div class="row">
@@ -202,19 +202,19 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
             <?= $form->field($model, 'phone_contact')->textInput(['placeholder' => 'Контактный телефон']) ?>
         </div>
     </div>
-        
+
     <?= $form->field($model, 'address')->textarea(
                                 ['placeholder' => 'Почтовый адрес места регистрации',
-                                 'rows' => 1 ]) 
+                                 'rows' => 1 ])
     ?>
-        
+
     <?= $form->field($model, 'note')->textarea(
                                 ['placeholder' => 'Укажите текстовое описание обращения',
-                                 'rows' => 3 ]) 
+                                 'rows' => 3 ])
     ?>
-    
-        
-        
+
+
+
     <?php
       if (Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id )) {
         echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
@@ -227,7 +227,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
     <?= $form->field($model, 'final_note')->textarea(
                                 ['placeholder' => 'Укажите принятые меры',
-                                 'rows' => 3 ]) 
+                                 'rows' => 3 ])
     ?>
     </div>
     </div>
@@ -241,11 +241,11 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
             if (!is_null($model->req_id)) {
                 echo Html::a('Удалить',['request/delete', 'id' => $model->req_id],['class'=>'btn btn-default']);
             }
-        ?>    
+        ?>
 
         <?php
         if ($action == 'create') {
-            echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']); 
+            echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']);
         }
           else {
             echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);
@@ -255,8 +255,8 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
             <!--/div>
         </div-->
-  </div>      
+  </div>
  </div>
 
-<?php ActiveForm::end() ?> 
+<?php ActiveForm::end() ?>
 </div>
