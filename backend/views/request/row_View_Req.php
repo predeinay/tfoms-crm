@@ -9,8 +9,7 @@ use yii\helpers\HtmlPurifier;
           <div class="row">
              <div class="col-lg-7 col-md-7 col-sm-7">
                 <?=
-                Html::a('<span class="glyphicon glyphicon-edit"> </span>
-                         <span class="req-edit-link">
+                Html::a('<span class="req-edit-link">
                           Обращение #'.$model->req_id.' от '.
                           Yii::$app->myhelper->to_beauty_date_time($model->created_on)
                           .' | '.$model->user_name.

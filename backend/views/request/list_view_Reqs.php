@@ -157,8 +157,9 @@ $filter_count = Yii::$app->session->get('filter_count');
             </div>
 
             <div class="col-md-5 col-sm-7" style="margin-top: 5px;">
-              <button type="button" class="btn <?= $filter_count == 0 ? 'btn-primary' : "btn-success" ?>" data-toggle="modal" data-target="#filterModal">
-              <?= $filter_count == 0 ? '' : "(".$filter_count.")" ?> <span class="glyphicon glyphicon-filter"> </span> Найти по параметрам
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+              <span class="glyphicon glyphicon-filter"> </span> Найти по параметрам
+              <?= $filter_count == 0 ? '' : '<span class="badge">'.$filter_count.'</span>' ?>
               </button>
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#printModal">
                 <span class="glyphicon glyphicon-print"> </span> Сформировать отчет
