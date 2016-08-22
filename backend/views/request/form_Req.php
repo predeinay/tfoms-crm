@@ -99,11 +99,12 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                   //'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
                   'options' => [
                                 // 'value' =>  Yii::$app->formatter->asDate($model->created_on,'yyyy-MM-dd HH:mm'),
-                                 'placeholder' => 'ГГГГ-ММ-ДД ЧЧ:ММ:СС',
+                                 'placeholder' => 'ДД.ММ.ГГГГ ЧЧ:ММ:СС',
                                ] ,
                     'pluginOptions' => [
                         'autoclose' => true,
-                        'format' => 'yyyy-mm-dd hh:ii:ss',
+                        //'format' => 'yyyy-mm-dd hh:ii:ss',
+                        'format' => 'dd.mm.yyyy hh:ii:ss',
                         'todayHighlight' => true
                     ]
                 ])
@@ -175,11 +176,12 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                 [
                   //'type' => DatePicker::TYPE_COMPONENT_APPEND,
                   'options' => [
-                                 'placeholder' => 'ГГГГ-ММ-ДД',
+                                 'placeholder' => 'ДД.ММ.ГГГГ',
                                ] ,
                     'pluginOptions' => [
                         'autoclose' => true,
-                        'format' => 'yyyy-mm-dd',
+                        //'format' => 'yyyy-mm-dd',
+                        'format' => 'dd.mm.yyyy',
                         'todayHighlight' => true
                     ]
                 ])

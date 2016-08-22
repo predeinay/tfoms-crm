@@ -151,13 +151,12 @@ $filter_count = Yii::$app->session->get('filter_count');
   </div>
  <!-- END  Modals -->
     <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-7 col-sm-5" style="margin-top: 5px;">
             <?= Html::a('<span class="glyphicon glyphicon-th-large"> </span> Добавить обращение', ['/request/form'],
-                        ['class'=>'btn btn-primary',
-                         'style' => 'margin-bottom: 15px;']) ?>
+                        ['class'=>'btn btn-primary']) ?>
             </div>
 
-            <div class="col-md-6" style="text-align: right;">
+            <div class="col-md-5 col-sm-7" style="margin-top: 5px;">
               <button type="button" class="btn <?= $filter_count == 0 ? 'btn-primary' : "btn-success" ?>" data-toggle="modal" data-target="#filterModal">
               <?= $filter_count == 0 ? '' : "(".$filter_count.")" ?> <span class="glyphicon glyphicon-filter"> </span> Найти по параметрам
               </button>
@@ -165,8 +164,9 @@ $filter_count = Yii::$app->session->get('filter_count');
                 <span class="glyphicon glyphicon-print"> </span> Сформировать отчет
               </button>
             </div>
-
-            <div class="col-lg-12">
+          </div>
+            <div class="row">
+            <div class="col-lg-12" style="margin-top: 15px;">
             <?php
               $searchDay = '';
               if ( key_exists('RequestsSearch', $_GET) ) {

@@ -47,9 +47,14 @@ class RequestController extends MainController {
 
         if (!is_null($id)) {
             $model = Requests::findOne($id);
+
         } else {
             $model = new Requests();
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
+            /*$model->created_on =
+              Yii::$app->myhelper->to_beauty_date_time(
+                  Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate']
+                );*/
             $model->company_id = Yii::$app->user->identity->company_id;
 
             // Get default status for new request
@@ -61,6 +66,10 @@ class RequestController extends MainController {
                 $model->status_ref_id = $defaultStatus->ref_id;
             }
         }
+
+        $model->created_on = Yii::$app->myhelper->to_beauty_date_time($model->created_on);
+        if ($model->birth_day)
+        $model->birth_day = Yii::$app->myhelper->to_beauty_date($model->birth_day);
 
         return $this->render('form_Req',
                              ['model' => $model,
@@ -98,14 +107,20 @@ class RequestController extends MainController {
         $model = new Requests();
 
         $model->created_by = Yii::$app->user->getId();
-        $model->created_on = new Expression('NOW()');
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
-            parent::flash(true);
-        } else {
-            parent::flash(false);
+        if ( $model->load(Yii::$app->request->post()) ) {
+
+          $model->created_on = Yii::$app->myhelper->to_date_time($model->created_on);
+          if ($model->birth_day)
+          $model->birth_day = Yii::$app->myhelper->to_date($model->birth_day);
+
+
+        if ( $model->validate() && $model->save() ) {
+                parent::flash(true);
+            } else {
+                parent::flash(false);
+            }
         }
-
         return $this->redirect(['/request/list']);
 
     }
@@ -122,6 +137,11 @@ class RequestController extends MainController {
         $model = Requests::findOne($id);
 
         if ( $model->load(Yii::$app->request->post()) ) {
+
+          $model->created_on = Yii::$app->myhelper->to_date_time($model->created_on);
+          if ($model->birth_day)
+          $model->birth_day = Yii::$app->myhelper->to_date($model->birth_day);
+
 
         if ( $model->validate() && $model->save() ) {
                 parent::flash(true);
