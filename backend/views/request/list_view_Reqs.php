@@ -140,7 +140,10 @@ $filter_count = Yii::$app->session->get('filter_count');
           <h4 class="modal-title" id="myModalLabel">Выберите отчет</h4>
         </div>
         <div class="modal-body">
-          Здесь список отчетов
+            <div class="list-group">
+              <a href="<?= \yii\helpers\Url::to(['request/print-journal']) ?>" class="list-group-item"><span class="glyphicon glyphicon-list-alt"> </span> Электронный журнал</a>
+              <a href="#" class="list-group-item"><span class="glyphicon glyphicon-stats"> </span> Форма №2 по приказу 146</a>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
@@ -181,113 +184,6 @@ $filter_count = Yii::$app->session->get('filter_count');
                     ]);
 
             ?>
-
-            <?php /* GridView::widget([
-                'dataProvider' => $provider,
-                'filterModel' => $searchModel,
-                'rowOptions' => function ($model, $key, $index, $grid) {
-                                    if ($model['status_text'] == 'В работе') {
-                                        return ['class' => 'grid-yellow'];
-                                    }
-                                },
-                'columns' => [
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'buttons' => [
-                             'update' => function ($url, $model, $key) {
-                                   return Html::a('<i class="glyphicon glyphicon-pencil"></i>',
-                                                    ['request/form', 'id' => $model['req_id']]
-                                                 );
-                                }
-                            ],
-                        'template'=>'{update}'
-                    ],
-                    [
-                        'attribute' => 'created_on',
-                        'label' => 'Дата',
-                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width:95px;'],
-                        'filter' => DatePicker::widget([
-                                        'options' => [ 'placeholder' => 'Дата обращения', 'class' => 'form-control'],
-                                        'name' => 'RequestsSearch[created_on]',
-                                        'type' => DatePicker::TYPE_INPUT,//::TYPE_COMPONENT_APPEND,
-                                        'removeButton' => false,
-                                        'value' => $searchDay,
-                                        'pluginOptions' => [
-                                            'autoclose' => true,
-                                            'format' => 'yyyy-mm-dd',
-                                        ]
-                                    ]),
-                    ],
-                    [
-                        'attribute' => 'fio_polis',
-                        'label' => 'ФИО и полис',
-                        'content' => function($model) {
-                                return $model['surname']. ' ' .
-                                       $model['name']. ' ' .
-                                       $model['patronymic'].'<br>'.
-                                       ($model['policy_ser'] == '' ? '' : 'Серия ').$model['policy_ser'].'<br>'.
-                                       ($model['policy_num'] == '' ? '' : 'Номер ').$model['policy_num']
-                                ;
-                        },
-                        //'contentOptions' => ['class' => 'text-wrap']
-                    ],
-                    [   'attribute' => 'kind_text',
-                        'label' => 'Вид',
-                        'contentOptions' => ['class' => 'text-wrap'],
-                        'filter' => Html::activeDropDownList(
-                                        $searchModel,
-                                        'kind_ref_id',
-                                        yii\helpers\ArrayHelper::map(common\models\refCommon::getRefByName('Вид обращения'),'ref_id','text'),
-                                        [
-                                            'class'=>'form-control',
-                                            'prompt' => ' - Вид'
-                                        ]
-                                ),
-                    ],
-                    [
-                        'attribute' => 'reason_text',
-                        'label' => 'Суть',
-                        'contentOptions' => ['class' => 'text-wrap'],
-                        'filter' => Html::activeDropDownList(
-                                        $searchModel,
-                                        'reason_id',
-                                        yii\helpers\ArrayHelper::map(common\models\refReason::getAll(),'reason_id','reason_text'),
-                                        [
-                                            'class'=>'form-control',
-                                            'prompt' => ' - Суть обращения'
-                                        ]
-                                ),
-
-                    ],
-                    [
-                        'attribute' => 'note',
-                        'label' => 'Описание обращения',
-                        'contentOptions' => ['class' => 'text-wrap', 'style' => 'min-width: 400px;']
-                    ],
-                    [
-                        'attribute' => 'status_text',
-                        'label' => 'Статус',
-                        'content' => function($model, $key, $index, $column) {
-                                    return $model['status_text'] == 'закрыто'?
-                                             '<b><span class="label label-default">'.$model['status_text'].'</span></b>':
-                                             '<b><span class="label label-warning">'.$model['status_text'].'</span></b>';
-                                },
-                        'filter' => Html::activeDropDownList(
-                                        $searchModel,
-                                        'status_ref_id',
-                                        yii\helpers\ArrayHelper::map(common\models\refCommon::getRefByName('Статус обращения'),'ref_id','text'),
-                                        [
-                                            'class'=>'form-control',
-                                            'prompt' => ' - Статус'
-                                        ]
-                                ),
-                    ],
-                ]
-                ]);
-             */
-
-                ?>
-
 
             </div>
     </div>

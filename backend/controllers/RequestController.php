@@ -18,6 +18,9 @@ use yii\data\ActiveDataProvider;
 
 use backend\models\requestSearch;
 
+use PHPExcel;
+use PHPExcel_Writer_Excel5;
+
 class RequestController extends MainController {
 
     // Список обращений
@@ -42,6 +45,19 @@ class RequestController extends MainController {
                 );
     }
 
+    public function actionPrintJournal() {
+        
+        $dataModel = new requestSearch();
+        $xls = $dataModel->printJournal( Yii::$app->request->get() );
+                
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename=Журнал_обращений'.date('l jS \of F Y h:i:s A').'.xls ');
+        
+        $objWriter = new PHPExcel_Writer_Excel5($xls);
+        $objWriter->save('php://output');
+        
+    }
+    
     // Форма для обращений
     public function actionForm($id = null) {
 

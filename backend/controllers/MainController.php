@@ -39,7 +39,9 @@ class MainController extends Controller
                                       // ajax actions
                                       'subreason','subresult','is-custom-reason',
                                       // add relation actions
-                                      'comments','records'],
+                                      'comments','records',
+                                      // report
+                                       'print-journal' ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
