@@ -145,10 +145,10 @@ $filter_count = Yii::$app->session->get('filter_count');
               <a href="#" class="list-group-item"><span class="glyphicon glyphicon-stats"> </span> Форма №2 по приказу 146</a>
             </div>
         </div>
-        <div class="modal-footer">
+        <!--div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
           <button type="button" class="btn btn-primary">Сформировать файл</button>
-        </div>
+        </div-->
       </div>
     </div>
   </div>
