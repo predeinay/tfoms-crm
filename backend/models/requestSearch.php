@@ -7,6 +7,7 @@ use common\models\Requests;
 use yii\data\ActiveDataProvider;
 use yii\web\Session;
 use PHPExcel;
+use PHPExcel_Style_Border;
 
 class requestSearch extends Requests {
 
@@ -39,10 +40,38 @@ class requestSearch extends Requests {
   public function printJournal($params) {
       // генерим заголовки
       $xls = new PHPExcel();
+      
+      $BStyle = array(
+        'borders' => array(
+          'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+          )
+        )
+      );
+      
+      /*$xls->getDefaultStyle()
+        ->getBorders()
+        ->getTop()
+            ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+      $xls->getDefaultStyle()
+        ->getBorders()
+        ->getBottom()
+            ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+      $xls->getDefaultStyle()
+        ->getBorders()
+        ->getLeft()
+            ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+      $xls->getDefaultStyle()
+        ->getBorders()
+        ->getRight()
+        ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);*/
+      
       $xls->setActiveSheetIndex(0);
       $sheet = $xls->getActiveSheet();
       
-      $sheet->getColumnDimension('A')->setAutoSize(true);
+      $sheet->getRowDimension(1)->setRowHeight(30);
+      
+      /*$sheet->getColumnDimension('A')->setAutoSize(true);
       $sheet->getColumnDimension('B')->setAutoSize(true);
       $sheet->getColumnDimension('C')->setAutoSize(true);
       $sheet->getColumnDimension('D')->setAutoSize(true);
@@ -60,11 +89,10 @@ class requestSearch extends Requests {
       $sheet->getColumnDimension('P')->setAutoSize(true);
       $sheet->getColumnDimension('Q')->setAutoSize(true);
       $sheet->getColumnDimension('R')->setAutoSize(true);
-      $sheet->getColumnDimension('S')->setAutoSize(true);
-      
-      
+      $sheet->getColumnDimension('S')->setAutoSize(true);*/
+            
       $sheet->setTitle('Электронный журнал');
-      //$sheet->getStyle('A')->getBorders()->getAllBorders()->setColor(\PHPExcel_Style_Color::COLOR_BLACK);
+
       $sheet->setCellValue("A1", '№ п\п');
       $sheet->setCellValue("B1", 'Дата');
       $sheet->setCellValue("C1", 'Форма обращения');
@@ -86,6 +114,7 @@ class requestSearch extends Requests {
       $sheet->setCellValue("S1", 'Принятые меры');
       
       $modelReqs = $this->getDataModel($params)->all();
+      $i = 0;
       // для каждой заявки генерим строку в таблицу
       foreach ($modelReqs as $index => $model) {
           $i = $index +2;
@@ -109,6 +138,16 @@ class requestSearch extends Requests {
           $sheet->setCellValue("R".$i, $model->result_text); //Результат обращения
           $sheet->setCellValue("S".$i, $model->final_note); // меры
       }
+      
+      // set border
+      $xls->getActiveSheet()->getStyle('A1:S'.$i)->applyFromArray($BStyle);
+      $sheet->getStyle('A1:S'.$i)->getAlignment()->setWrapText(true);
+      $sheet->getRowDimension(2)->setRowHeight(-1);
+      
+      /*foreach($xls->getActiveSheet()->getRowDimensions() as $rd) { 
+            $rd->setRowHeight(-1); 
+        }*/
+      //$sheet->getColumnDimension('B')->setAutoSize(true);
       
       return $xls;
       
