@@ -13,6 +13,9 @@ use common\models\refReason;
 use common\models\refCommon;
 use common\models\refCompany;
 
+use backend\models\UploadForm;
+use yii\web\UploadedFile;
+
 class SettingsController extends MainController
 {
 
@@ -244,6 +247,17 @@ class SettingsController extends MainController
         
         $model = refCompany::find()->with('ref_common');
         
+        $uploadForm = new UploadForm();
+        
+        if (Yii::$app->request->isPost) {
+            $uploadForm->file = UploadedFile::getInstance($uploadForm, 'file');
+            if ($uploadForm->upload() && $uploadForm->parseMedOrgXml()) {
+                parent::flash(true);
+            } else {
+                parent::flash(false);
+            }
+        }
+        
         $provider = new ActiveDataProvider([
                         'query' => $model,
                         'pagination' => [
@@ -252,7 +266,8 @@ class SettingsController extends MainController
                     ]);
         
         return $this->render('list_RefCompany',[
-            'provider' => $provider
+            'provider' => $provider,
+            'uploadModel' => $uploadForm
         ]);
     }
     

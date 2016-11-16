@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) ?> 
         
     <?= $form->field($model, 'company_name')->textInput()->hint('Укажите название организации') ?>
+    <?= $form->field($model, 'company_short_name')->textInput()->hint('Укажите краткое название организации') ?>
     <?= $form->field($model, 'company_code')->textInput()->hint('Укажите код организации') ?>
     
         

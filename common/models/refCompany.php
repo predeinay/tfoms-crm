@@ -20,6 +20,7 @@ class refCompany extends \yii\db\ActiveRecord
         return [
             'company_id' => '',
             'company_name' => 'Название организации',
+            'company_short_name' => 'Краткое название организации',
             'company_code' => 'Внешний код организации',
             'type_ref_id' => 'Тип организации',
 
@@ -31,7 +32,7 @@ class refCompany extends \yii\db\ActiveRecord
         return [
             
             [['company_name','type_ref_id'], 'required'],
-            [['company_code'],'safe'],
+            [['company_code','company_short_name'],'safe'],
             [['type_ref_id','company_id'], 'number'],
             
         ];
