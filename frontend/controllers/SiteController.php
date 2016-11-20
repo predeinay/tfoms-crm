@@ -157,7 +157,29 @@ class SiteController extends Controller
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
-                              'modelCompany' => refCompany::find()->all(),
+                              'modelClaimCompany' => refCompany::find()
+                                                        ->where(
+                                                            [ 'not in','type_ref_id',
+                                                                    [ refCommon::find()->where(
+                                                                            ['text' => 'ТФОМС',
+                                                                             'type' => 'Тип организации']
+                                                                      )->one()->ref_id
+                                                                    ] 
+                                                            ] 
+                                                        )
+                                                        ->all(),
+                              'modelCompany' => refCompany::find()
+                                                        ->where(
+                                                            [ 'not in','type_ref_id',
+                                                                    [ refCommon::find()->where(
+                                                                            ['text' => 'МО',
+                                                                             'type' => 'Тип организации']
+                                                                      )->one()->ref_id
+                                                                    ] 
+                                                            ] 
+                                                        )
+                                                        ->all(),
+                                 
                               'action' => is_null($id) ? 'create' : 'edit']);
         
     }
