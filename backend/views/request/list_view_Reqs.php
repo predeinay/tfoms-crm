@@ -110,9 +110,10 @@ $filter_count = Yii::$app->session->get('filter_count');
             <?= $form->field($searchModel, 'reason_id')
                      ->widget(DepDrop::classname(), [
                              'type'=>DepDrop::TYPE_SELECT2,
-                             //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                             'options' => ['prompt' => '- Укажите суть обращения -'],
                              'data' => ArrayHelper::map( $modelReason , 'reason_id','reason_text'),
                              'pluginOptions'=>[
+                                   'allowClear' => true,
                                    'depends'=>['kind_ref_id'],
                                    'placeholder' => '- Укажите суть обращения -',
                                    'url' => yii\helpers\Url::to(['/request/subreason']),

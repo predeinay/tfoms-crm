@@ -60,7 +60,7 @@ class RequestController extends MainController {
     
     // Форма для обращений
     public function actionForm($id = null) {
-
+        
         if (!is_null($id)) {
             $model = Requests::findOne($id);
 
@@ -95,6 +95,17 @@ class RequestController extends MainController {
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
+                              'modelClaimCompany' => refCompany::find()
+                                                        ->where(
+                                                            [ 'not in','type_ref_id',
+                                                                    [ refCommon::find()->where(
+                                                                            ['text' => 'ТФОМС',
+                                                                             'type' => 'Тип организации']
+                                                                      )->one()->ref_id
+                                                                    ] 
+                                                            ] 
+                                                        )
+                                                        ->all(),
                               'modelCompany' => refCompany::find()
                                                         ->where(
                                                             [ 'not in','type_ref_id',
@@ -159,9 +170,18 @@ class RequestController extends MainController {
     }
 
     public function actionUpdate($id) {
-
+        
         $model = Requests::findOne($id);
 
+        /*if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            //$model->addError('claim_company_id', 'some error');
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            //var_dump(\yii\widgets\ActiveForm::validate($model));
+            return \yii\widgets\ActiveForm::validate($model);
+            exit();
+        }*/
+        
+        
         if ( $model->load(Yii::$app->request->post()) ) {
 
           $model->created_on = Yii::$app->myhelper->to_date_time($model->created_on);
@@ -172,6 +192,8 @@ class RequestController extends MainController {
         if ( $model->validate() && $model->save() ) {
                 parent::flash(true);
             } else {
+                var_dump($model->getErrors());
+                exit;
                 parent::flash(false);
             }
         }

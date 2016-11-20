@@ -56,6 +56,7 @@ class Requests extends \yii\db\ActiveRecord
 
             'final_note' => 'Принятые меры',
             'company_id' => 'Зона ответственности',
+            'claim_company_id' => 'Организация'
         ];
     }
 
@@ -71,10 +72,23 @@ class Requests extends \yii\db\ActiveRecord
             [['created_on'], 'date' , 'format' => 'yyyy-M-d H:m:s' ],
             [['phone_aoh_private'],'string', 'max' => 1],
             [['company_id'],'number'],
-            [['created_by','result_ref_id'], 'safe']
+            [['created_by','result_ref_id'], 'safe'],
+            [['claim_company_id'],'required',
+                'whenClient' => "function (attribute, value) {
+                      return $('#kind_ref_id :selected').text() == 'Жалоба';
+                }",
+                'when' => function($model) {
+                    return $model-> kind_ref_id == refCommon::findOne(
+                                                        [ 'type' => 'Вид обращения',
+                                                          'text' => 'Жалоба']
+                                                    )->ref_id;
+                }
+            ],
+    
 
         ];
 
     }
+    
 
 }

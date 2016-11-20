@@ -40,15 +40,30 @@ $js = '
                      }
             });
   }
+  
+function showHideClaimCompany() {
+
+    var kind_ref_text = $("#kind_ref_id :selected").text();
+    if (kind_ref_text == "Жалоба") {
+        $("#requests-claim_company_id").parent().css("display","block");
+    } else {
+        $("#requests-claim_company_id").parent().css("display","none");
+    }
+}
 
   $("#requests-reason_id").on("change", function(event) {
 
       getReasonCustomFlag();
 
    });
+   
+  $("#kind_ref_id").on("change", function() {
+    showHideClaimCompany();
+  });
 
   function init() {
       getReasonCustomFlag();
+      showHideClaimCompany();
   }
 
   init();
@@ -82,7 +97,9 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     <?php
 
     $form = ActiveForm::begin([
-        'action' => $action == 'create' ? ['request/create'] : ['request/update','id' => $model->req_id ]
+        'action' => $action == 'create' ? ['request/create'] : ['request/update','id' => $model->req_id ],
+        'id' => 'request-form',
+        
     ]);
     ?>
 
@@ -122,7 +139,18 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
              ->dropDownList(ArrayHelper::map( $modelKind,'ref_id','text'),
                             [ 'id' => 'kind_ref_id',
                              'prompt' => '- Укажите вид обращения -']) ?>
-
+        
+    <!-- Справочник МО и СМО  условный от вида обращения-->
+    <?= $form->field($model, 'claim_company_id')
+             ->widget(Select2::classname(), [
+                    'options' => ['placeholder' => 'Укажите организацию для жалобы'],
+                    'pluginOptions' => [ 'allowClear' => true, ],
+                    //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                    'data' => ArrayHelper::map( $modelClaimCompany , 'company_id','company_name'),
+                ]); ?>
+    <!-- -->
+    
+    
     <?= $form->field($model, 'reason_id')
              ->widget(DepDrop::classname(), [
                     'type'=>DepDrop::TYPE_SELECT2,
