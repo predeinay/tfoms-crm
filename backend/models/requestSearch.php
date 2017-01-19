@@ -242,10 +242,10 @@ class requestSearch extends Requests {
             $reqModel->andFilterWhere(['requests.created_by' =>  $this->created_by]);
 
             if ( $this->from_date != '') {
-              $reqModel->andFilterWhere([ '>=','requests.created_on' ,\Yii::$app->myhelper->to_date($this->from_date) ]);
+              $reqModel->andFilterWhere([ '>=','DATE(requests.created_on)' ,\Yii::$app->myhelper->to_date($this->from_date) ]);
             }
             if ( $this->to_date != '') {
-              $reqModel->andFilterWhere([ '<=','requests.created_on' ,\Yii::$app->myhelper->to_date($this->to_date) ]);
+              $reqModel->andFilterWhere([ '<=','DATE(requests.created_on)' ,\Yii::$app->myhelper->to_date($this->to_date) ]);
             }
             
     return $reqModel;
