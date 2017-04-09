@@ -37,6 +37,17 @@ $filter_count = Yii::$app->session->get('filter_count');
         <div class="modal-body">
           <div class="request-search">
             <div class="row">
+              <div class="col-md-4">
+                <?= $form->field($searchModel, 'surname')->textInput(['placeholder' => 'Укажите фамилию']) ?>
+              </div>
+              <div class="col-md-4">
+                <?= $form->field($searchModel, 'name')->textInput(['placeholder' => 'Укажите имя']) ?>
+              </div>
+              <div class="col-md-4">
+                <?= $form->field($searchModel, 'patronymic')->textInput(['placeholder' => 'Укажите отчество']) ?>
+              </div>
+            </div>
+            <div class="row">
               <div class="col-md-6">
                 <?= $form->field($searchModel, 'from_date')->label('Дата начала')
                     ->widget(DatePicker::className(),

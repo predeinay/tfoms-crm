@@ -20,6 +20,9 @@ class requestSearch extends Requests {
   public $from_date;
   public $to_date;
   public $created_by;
+  public $surname;
+  public $name;
+  public $patronymic;
 
   public $filterCount = 0;
 
@@ -33,14 +36,15 @@ class requestSearch extends Requests {
             'kind_ref_id',
             'reason_id',
             'created_by',
-            'from_date','to_date'], 'safe'],
+            'from_date','to_date',
+            'surname','name','patronymic'], 'safe'],
       ];
   }
 
   public function printJournal($params) {
       // генерим заголовки
       $xls = new PHPExcel();
-      
+
       $BStyle = array(
         'borders' => array(
           'allborders' => array(
@@ -48,7 +52,7 @@ class requestSearch extends Requests {
           )
         )
       );
-      
+
       /*$xls->getDefaultStyle()
         ->getBorders()
         ->getTop()
@@ -65,12 +69,12 @@ class requestSearch extends Requests {
         ->getBorders()
         ->getRight()
         ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);*/
-      
+
       $xls->setActiveSheetIndex(0);
       $sheet = $xls->getActiveSheet();
-      
+
       $sheet->getRowDimension(1)->setRowHeight(30);
-      
+
       /*$sheet->getColumnDimension('A')->setAutoSize(true);
       $sheet->getColumnDimension('B')->setAutoSize(true);
       $sheet->getColumnDimension('C')->setAutoSize(true);
@@ -90,7 +94,7 @@ class requestSearch extends Requests {
       $sheet->getColumnDimension('Q')->setAutoSize(true);
       $sheet->getColumnDimension('R')->setAutoSize(true);
       $sheet->getColumnDimension('S')->setAutoSize(true);*/
-            
+
       $sheet->setTitle('Электронный журнал');
 
       $sheet->setCellValue("A1", '№ п\п');
@@ -112,7 +116,7 @@ class requestSearch extends Requests {
       $sheet->setCellValue("Q1", 'Исполнитель');
       $sheet->setCellValue("R1", 'Результат обращения');
       $sheet->setCellValue("S1", 'Принятые меры');
-      
+
       $modelReqs = $this->getDataModel($params)->all();
       $i = 0;
       // для каждой заявки генерим строку в таблицу
@@ -138,21 +142,21 @@ class requestSearch extends Requests {
           $sheet->setCellValue("R".$i, $model->result_text); //Результат обращения
           $sheet->setCellValue("S".$i, $model->final_note); // меры
       }
-      
+
       // set border
       $xls->getActiveSheet()->getStyle('A1:S'.$i)->applyFromArray($BStyle);
       $sheet->getStyle('A1:S'.$i)->getAlignment()->setWrapText(true);
       $sheet->getRowDimension(2)->setRowHeight(-1);
-      
-      /*foreach($xls->getActiveSheet()->getRowDimensions() as $rd) { 
-            $rd->setRowHeight(-1); 
+
+      /*foreach($xls->getActiveSheet()->getRowDimensions() as $rd) {
+            $rd->setRowHeight(-1);
         }*/
       //$sheet->getColumnDimension('B')->setAutoSize(true);
-      
+
       return $xls;
-      
+
   }
-  
+
   public function search($params) {
 
             $provider = new ActiveDataProvider([
@@ -161,10 +165,10 @@ class requestSearch extends Requests {
                                         'pageSize' => 20,
                                     ],
                                 ]);
-            
+
     return $provider;
   }
-  
+
   public function getDataModel($params) {
           $reqModel = Requests::find()
                 ->select('req_id, created_on, user_name, company_name, status.text as status_text,
@@ -207,6 +211,9 @@ class requestSearch extends Requests {
                   $this->created_by = Yii::$app->session->get('created_by');
                   $this->from_date = Yii::$app->session->get('from_date');
                   $this->to_date = Yii::$app->session->get('to_date');
+                  $this->surname = Yii::$app->session->get('surname');
+                  $this->name = Yii::$app->session->get('name');
+                  $this->patronymic = Yii::$app->session->get('patronymic');
 
 
                   //return $provider;
@@ -223,6 +230,9 @@ class requestSearch extends Requests {
               Yii::$app->session->set('created_by',$this->created_by);
               Yii::$app->session->set('from_date',$this->from_date);
               Yii::$app->session->set('to_date',$this->to_date);
+              Yii::$app->session->set('surname',$this->surname);
+              Yii::$app->session->set('name',$this->name);
+              Yii::$app->session->set('patronymic',$this->patronymic);
               Yii::$app->session->set('filter_count', count(array_filter( $params['requestSearch'] )) );
             }
 
@@ -241,13 +251,18 @@ class requestSearch extends Requests {
             $reqModel->andFilterWhere(['requests.reason_id' =>  $this->reason_id]);
             $reqModel->andFilterWhere(['requests.created_by' =>  $this->created_by]);
 
+            $reqModel->andFilterWhere(['like','requests.name', $this->name ]);
+            $reqModel->andFilterWhere(['like','requests.patronymic', $this->patronymic]);
+            $reqModel->andFilterWhere(['like','requests.surname', $this->surname]);
+              //var_dump( $reqModel->createCommand()->getRawSql() );
+              //exit();
             if ( $this->from_date != '') {
               $reqModel->andFilterWhere([ '>=','DATE(requests.created_on)' ,\Yii::$app->myhelper->to_date($this->from_date) ]);
             }
             if ( $this->to_date != '') {
               $reqModel->andFilterWhere([ '<=','DATE(requests.created_on)' ,\Yii::$app->myhelper->to_date($this->to_date) ]);
             }
-            
+
     return $reqModel;
   }
 

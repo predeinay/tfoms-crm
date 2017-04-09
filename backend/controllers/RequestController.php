@@ -25,7 +25,7 @@ class RequestController extends MainController {
 
     // Список обращений
     public function actionList() {
-
+      
         $reqSearchModel = new requestSearch();
         // pass get arr for filtering
         $provider = $reqSearchModel->search( Yii::$app->request->get() );
@@ -46,21 +46,21 @@ class RequestController extends MainController {
     }
 
     public function actionPrintJournal() {
-        
+
         $dataModel = new requestSearch();
         $xls = $dataModel->printJournal( Yii::$app->request->get() );
-                
+
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename=Журнал_обращений'.date('l jS \of F Y h:i:s A').'.xls ');
-        
+
         $objWriter = new PHPExcel_Writer_Excel5($xls);
         $objWriter->save('php://output');
-        
+
     }
-    
+
     // Форма для обращений
     public function actionForm($id = null) {
-        
+
         if (!is_null($id)) {
             $model = Requests::findOne($id);
 
@@ -102,8 +102,8 @@ class RequestController extends MainController {
                                                                             ['text' => 'ТФОМС',
                                                                              'type' => 'Тип организации']
                                                                       )->one()->ref_id
-                                                                    ] 
-                                                            ] 
+                                                                    ]
+                                                            ]
                                                         )
                                                         ->all(),
                               'modelCompany' => refCompany::find()
@@ -113,8 +113,8 @@ class RequestController extends MainController {
                                                                             ['text' => 'МО',
                                                                              'type' => 'Тип организации']
                                                                       )->one()->ref_id
-                                                                    ] 
-                                                            ] 
+                                                                    ]
+                                                            ]
                                                         )
                                                         ->all(),
                               'action' => is_null($id) ? 'create' : 'edit']);
@@ -170,7 +170,7 @@ class RequestController extends MainController {
     }
 
     public function actionUpdate($id) {
-        
+
         $model = Requests::findOne($id);
 
         /*if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -180,8 +180,8 @@ class RequestController extends MainController {
             return \yii\widgets\ActiveForm::validate($model);
             exit();
         }*/
-        
-        
+
+
         if ( $model->load(Yii::$app->request->post()) ) {
 
           $model->created_on = Yii::$app->myhelper->to_date_time($model->created_on);
