@@ -25,7 +25,7 @@ class RequestController extends MainController {
 
     // Список обращений
     public function actionList() {
-      
+
         $reqSearchModel = new requestSearch();
         // pass get arr for filtering
         $provider = $reqSearchModel->search( Yii::$app->request->get() );
@@ -151,7 +151,6 @@ class RequestController extends MainController {
           if ($model->birth_day)
           $model->birth_day = Yii::$app->myhelper->to_date($model->birth_day);
 
-
         if ( $model->validate() && $model->save() ) {
                 parent::flash(true);
             } else {
@@ -173,27 +172,15 @@ class RequestController extends MainController {
 
         $model = Requests::findOne($id);
 
-        /*if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            //$model->addError('claim_company_id', 'some error');
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            //var_dump(\yii\widgets\ActiveForm::validate($model));
-            return \yii\widgets\ActiveForm::validate($model);
-            exit();
-        }*/
-
-
         if ( $model->load(Yii::$app->request->post()) ) {
 
           $model->created_on = Yii::$app->myhelper->to_date_time($model->created_on);
           if ($model->birth_day)
           $model->birth_day = Yii::$app->myhelper->to_date($model->birth_day);
 
-
         if ( $model->validate() && $model->save() ) {
                 parent::flash(true);
             } else {
-                var_dump($model->getErrors());
-                exit;
                 parent::flash(false);
             }
         }
@@ -257,6 +244,18 @@ class RequestController extends MainController {
         return \yii\helpers\Json::encode(
                     ['custom_reason_flag' => 0]
                 );
+
+    }
+
+    public function actionAjaxValidateRequest() {
+      if (Yii::$app->request->isAjax) {
+        $requestModel = new Requests();
+        if ($requestModel->load(Yii::$app->request->post())) {
+          $requestModel->created_on = Yii::$app->myhelper->to_date_time($requestModel->created_on);
+          Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+          return \yii\widgets\ActiveForm::validate($requestModel);
+        }
+      }
 
     }
 

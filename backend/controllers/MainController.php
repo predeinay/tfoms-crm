@@ -11,13 +11,13 @@ use backend\models\LoginForm;
 
 class MainController extends Controller
 {
-    
+
     const FLASH_OK = 'Действие выполнено';
     const FLASH_ERROR = 'Действие не выполнено';
     const PAGINATION_SIZE = 50;
-    
+
     public function behaviors()
-    { 
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -35,7 +35,7 @@ class MainController extends Controller
                     [
                         'controllers' => ['request'],
                         'actions' => ['form','list',
-                                      'create','update','delete',
+                                      'create','update','delete','ajax-validate-request',
                                       // ajax actions
                                       'subreason','subresult','is-custom-reason',
                                       // add relation actions
@@ -45,7 +45,7 @@ class MainController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    
+
                     [
                         'controllers' => ['site'],
                         'actions' => ['logout', 'index',
@@ -56,13 +56,15 @@ class MainController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    [   
+                    [
                         'controllers' => ['settings'],
                         'actions' => ['index','reasons','commons','company',
+                                      'global-list','global',
                                       'user-form','user-create','user-update','user-delete',
                                       'reason-form','reason-create','reason-update','reason-delete',
                                       'common-form','common-create','common-update','common-delete',
-                                      'company-form','company-create','company-update','company-delete',],
+                                      'company-form','company-create','company-update','company-delete',
+                                      ],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function() {
@@ -88,25 +90,25 @@ class MainController extends Controller
             ],
         ];
     }
-    
+
     public function flash($boolType) {
         if ($boolType) {
             Yii::$app->session->setFlash('success', self::FLASH_OK);
         } else {
             Yii::$app->session->setFlash('error', self::FLASH_ERROR);
         }
-    
+
     }
-    
+
     public function actionLogin()
     {
-        
+
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
         $model = new LoginForm();
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
@@ -115,7 +117,7 @@ class MainController extends Controller
             ]);
         }
     }
-    
+
     public function actionLogout()
     {
         Yii::$app->user->logout();

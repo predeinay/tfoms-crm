@@ -40,7 +40,7 @@ $js = '
                      }
             });
   }
-  
+
 function showHideClaimCompany() {
 
     var kind_ref_text = $("#kind_ref_id :selected").text();
@@ -56,7 +56,7 @@ function showHideClaimCompany() {
       getReasonCustomFlag();
 
    });
-   
+
   $("#kind_ref_id").on("change", function() {
     showHideClaimCompany();
   });
@@ -99,7 +99,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     $form = ActiveForm::begin([
         'action' => $action == 'create' ? ['request/create'] : ['request/update','id' => $model->req_id ],
         'id' => 'request-form',
-        
+        'validationUrl' => yii\helpers\Url::toRoute(['/request/ajax-validate-request'])
     ]);
     ?>
 
@@ -109,22 +109,25 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
     <?= $form->field($model, 'req_id')->hiddenInput() ?>
 
     <div class="col-sm-5">
-
-    <?= $form->field($model, 'created_on')
-              ->widget(DateTimePicker::className(),
-                [
-                  //'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
-                  'options' => [
-                                // 'value' =>  Yii::$app->formatter->asDate($model->created_on,'yyyy-MM-dd HH:mm'),
-                                 'placeholder' => 'ДД.ММ.ГГГГ ЧЧ:ММ:СС',
-                               ] ,
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        //'format' => 'yyyy-mm-dd hh:ii:ss',
-                        'format' => 'dd.mm.yyyy hh:ii:ss',
-                        'todayHighlight' => true
-                    ]
-                ])
+    <?php if ( $action === 'create' ) {
+          echo $form->field($model, 'created_on',['enableAjaxValidation' => true])
+            ->widget(DateTimePicker::className(),
+              [
+                //'type' => DateTimePicker::TYPE_COMPONENT_APPEND,
+                'options' => [
+                              // 'value' =>  Yii::$app->formatter->asDate($model->created_on,'yyyy-MM-dd HH:mm'),
+                               'placeholder' => 'ДД.ММ.ГГГГ ЧЧ:ММ:СС',
+                             ] ,
+                  'pluginOptions' => [
+                      'autoclose' => true,
+                      //'format' => 'yyyy-mm-dd hh:ii:ss',
+                      'format' => 'dd.mm.yyyy hh:ii:ss',
+                      'todayHighlight' => true
+                  ]
+              ]);
+      } else {
+        echo $form->field($model, 'created_on')->textInput(['readonly' => true]);
+      }
     ?>
 
     <?= $form->field($model, 'form_ref_id')
@@ -139,7 +142,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
              ->dropDownList(ArrayHelper::map( $modelKind,'ref_id','text'),
                             [ 'id' => 'kind_ref_id',
                              'prompt' => '- Укажите вид обращения -']) ?>
-        
+
     <!-- Справочник МО и СМО  условный от вида обращения-->
     <?= $form->field($model, 'claim_company_id')
              ->widget(Select2::classname(), [
@@ -149,8 +152,8 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
                     'data' => ArrayHelper::map( $modelClaimCompany , 'company_id','company_name'),
                 ]); ?>
     <!-- -->
-    
-    
+
+
     <?= $form->field($model, 'reason_id')
              ->widget(DepDrop::classname(), [
                     'type'=>DepDrop::TYPE_SELECT2,

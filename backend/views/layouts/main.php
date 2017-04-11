@@ -34,40 +34,41 @@ AppAsset::register($this);
             'class' => 'navbar navbar-default navbar-fixed-top',
         ],
     ]);
-    
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Вход в систему', 'url' => ['/main/login']];
     } else {
-                
+
         $menuItems = [
                     [
-                        'label' => '<span class="glyphicon glyphicon-list-alt"></span> Обращения', 
+                        'label' => '<span class="glyphicon glyphicon-list-alt"></span> Обращения',
                         'url' => ['/request/list'],
                         'active' => in_array(
-                                    $this->context->route, 
+                                    $this->context->route,
                                         ['request/list','request/form','request/comments','request/records']),
                     ],
         ];
-        
+
         if (Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->id )) {
-            
+
             $menuItems[] = [
                             'label' => '<span class="glyphicon glyphicon-cog"></span> Настройки',
                             'url' => ['/settings/index'],
                             'active' => in_array(
-                                    $this->context->route, 
+                                    $this->context->route,
                                         ['settings/index','settings/reasons','settings/commons','settings/company',
-                                         'settings/user-form','settings/reason-form','settings/common-form','settings/company-form']),
+                                         'settings/user-form','settings/reason-form','settings/common-form','settings/company-form',
+                                         'settings/global-list','settings/global']),
                         ];
         }
-        
+
         $menuItems[] = [
                         'label' => '<span class="glyphicon glyphicon-user"></span> Выйти ('.Yii::$app->user->identity->user_name.')',
                         'url' => ['/main/logout'],
                         'linkOptions' => ['data-method' => 'post'],
                     ];
     }
-    
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
@@ -81,7 +82,7 @@ AppAsset::register($this);
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
-        
+
         <?= $content ?>
     </div>
 </div>

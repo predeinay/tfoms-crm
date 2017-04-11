@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\models\globalConfig;
+
 class Requests extends \yii\db\ActiveRecord
 {
 
@@ -15,14 +17,13 @@ class Requests extends \yii\db\ActiveRecord
     public $reason_text;
     public $result_text;
 
+    const CREATED_ON_ERROR = 'Нельзя указывать дату регистрации менее %DATE_COUNT% дней от текущей даты';
 
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'requests';
     }
 
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
 
             'req_id' => '',
@@ -84,11 +85,22 @@ class Requests extends \yii\db\ActiveRecord
                                                     )->ref_id;
                 }
             ],
-    
+            ['created_on','validateCreatedOn'],
 
         ];
 
     }
-    
+
+    public function validateCreatedOn($attribute) {
+      if (!$this->req_id) {
+        $sysdate = new \DateTime( \Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'] );
+        $created_on = new \DateTime($this->created_on);
+        $globalModel = globalConfig::find()->where(['param' => 'Кол-во дней для регистрации задним числом'])->one();
+        $created_on->add(new \ DateInterval('P'.$globalModel->value.'D'));
+        if ($sysdate>$created_on) {
+          $this->addError($attribute,str_replace('%DATE_COUNT%',$globalModel->value,self::CREATED_ON_ERROR));
+        }
+      }
+    }
 
 }
