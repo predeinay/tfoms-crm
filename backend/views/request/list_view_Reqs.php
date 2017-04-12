@@ -136,6 +136,7 @@ $filter_count = Yii::$app->session->get('filter_count');
         <div class="modal-footer">
           <div class="form-group">
             <?= Html::submitButton('Применить фильтры', ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Сбросить фильтры',['request/filter-clear'],[ 'class' => 'btn btn-default']) ?>
             <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
           </div>
         </div>

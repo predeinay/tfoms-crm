@@ -35,7 +35,7 @@ class MainController extends Controller
                     [
                         'controllers' => ['request'],
                         'actions' => ['form','list',
-                                      'create','update','delete','ajax-validate-request',
+                                      'create','update','delete','ajax-validate-request','filter-clear',
                                       // ajax actions
                                       'subreason','subresult','is-custom-reason',
                                       // add relation actions

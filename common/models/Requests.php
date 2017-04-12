@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\models\globalConfig;
+use Yii;
 
 class Requests extends \yii\db\ActiveRecord
 {
@@ -89,6 +90,22 @@ class Requests extends \yii\db\ActiveRecord
 
         ];
 
+    }
+
+    public function clearSessionFilter() {
+      Yii::$app->session->set('company_id','');
+      Yii::$app->session->set('status_ref_id','');
+      Yii::$app->session->set('form_ref_id','');
+      Yii::$app->session->set('way_ref_id','');
+      Yii::$app->session->set('kind_ref_id','');
+      Yii::$app->session->set('reason_id','');
+      Yii::$app->session->set('created_by','');
+      Yii::$app->session->set('from_date','');
+      Yii::$app->session->set('to_date','');
+      Yii::$app->session->set('surname','');
+      Yii::$app->session->set('name','');
+      Yii::$app->session->set('patronymic','');
+      Yii::$app->session->set('filter_count','');
     }
 
     public function validateCreatedOn($attribute) {

@@ -45,6 +45,12 @@ class RequestController extends MainController {
                 );
     }
 
+    public function actionFilterClear() {
+      $reqSearchModel = new requestSearch();
+      $reqSearchModel->clearSessionFilter();
+      return $this->actionList();
+    }
+
     public function actionPrintJournal() {
 
         $dataModel = new requestSearch();
