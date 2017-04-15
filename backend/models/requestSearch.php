@@ -45,13 +45,13 @@ class requestSearch extends Requests {
       // генерим заголовки
       $xls = new PHPExcel();
 
-      $BStyle = array(
-        'borders' => array(
-          'allborders' => array(
+      $BStyle = [
+        'borders' => [
+          'allborders' => [
             'style' => PHPExcel_Style_Border::BORDER_THIN
-          )
-        )
-      );
+          ]
+        ]
+      ];
 
       /*$xls->getDefaultStyle()
         ->getBorders()
@@ -121,6 +121,7 @@ class requestSearch extends Requests {
       $i = 0;
       // для каждой заявки генерим строку в таблицу
       foreach ($modelReqs as $index => $model) {
+        
           $i = $index +2;
           $sheet->setCellValue("A".$i, $model->req_id); //'№ п\п'
           $sheet->setCellValue("B".$i, $model->created_on); // Дата
@@ -138,7 +139,7 @@ class requestSearch extends Requests {
           $sheet->setCellValue("N".$i, '??');  // Наименование МО
           $sheet->setCellValue("O".$i, '??');    // Наименование СМО
           $sheet->setCellValue("P".$i, '??'); //Уровень рассмотрения
-          $sheet->setCellValue("Q".$i, '??'); // Кто зарегал
+          $sheet->setCellValue("Q".$i, $model->user_name); // Кто зарегал
           $sheet->setCellValue("R".$i, $model->result_text); //Результат обращения
           $sheet->setCellValue("S".$i, $model->final_note); // меры
       }
