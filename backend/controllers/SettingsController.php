@@ -24,7 +24,7 @@ class SettingsController extends MainController
     {
 
         $userModel = refUser::find()
-                       ->select('user_id,login,user_name,company_name')
+                       ->select('user_id,login,user_name,company_name,level')
                        ->leftJoin('ref_company', 'ref_company.company_id = ref_users.company_id');
 
         $provider = new ActiveDataProvider([
@@ -59,6 +59,7 @@ class SettingsController extends MainController
         return $this->render('form_RefUser',
                              ['model' => $model,
                               'companyModel' => $companyModel->all(),
+                              'levelList' => $model->getLevelList(),
                               'action' => is_null($id) ? 'create' : 'edit']
                             );
     }
