@@ -257,6 +257,14 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
        echo $form->field($model, 'company_id')->hiddenInput()->label('');
       }
     ?>
+    <?= $form->field($model, 'executed_by')
+             ->widget(Select2::classname(), [
+                    'options' => ['placeholder' => 'Укажите исполнителя'],
+                    'pluginOptions' => [ 'allowClear' => true, ],
+                    //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                    'data' => ArrayHelper::map( $modelExecutor , 'user_id','user_name'),
+                ]);
+    ?>
 
     <?= $form->field($model, 'final_note')->textarea(
                                 ['placeholder' => 'Укажите принятые меры',

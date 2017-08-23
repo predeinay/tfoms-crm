@@ -58,14 +58,16 @@ class Requests extends \yii\db\ActiveRecord
 
             'final_note' => 'Принятые меры',
             'company_id' => 'Зона ответственности',
-            'claim_company_id' => 'Организация'
+            'claim_company_id' => 'Организация',
+
+            'executed_by' => 'Исполнитель'
         ];
     }
 
     public function rules() {
 
         return [
-            [['created_on','reason_id','form_ref_id','kind_ref_id','way_ref_id','status_ref_id'], 'required'],
+            [['created_on','reason_id','form_ref_id','kind_ref_id','way_ref_id','status_ref_id','executed_by'], 'required'],
             [['address','note','final_note','reason_custom_text'], 'string', 'max' => 512],
             [['surname','patronymic','name'], 'string', 'max' => 128],
             [['policy_ser','policy_num'],'string','max' => 24],

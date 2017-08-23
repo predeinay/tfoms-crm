@@ -72,6 +72,7 @@ class RequestController extends MainController {
 
         } else {
             $model = new Requests();
+            $model->executed_by = Yii::$app->user->identity->user_id;
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
             /*$model->created_on =
               Yii::$app->myhelper->to_beauty_date_time(
@@ -92,6 +93,18 @@ class RequestController extends MainController {
         $model->created_on = Yii::$app->myhelper->to_beauty_date_time($model->created_on);
         if ($model->birth_day)
         $model->birth_day = Yii::$app->myhelper->to_beauty_date($model->birth_day);
+
+        $execSelect = [
+            'concat(user_name,
+              CASE WHEN level is not null
+                then concat(" уровень представителя " ,level)
+                 else ""
+              END) as user_name',
+            'user_id'
+          ];
+        $modelExecutor = Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->user_id ) ?
+          refUser::find()->select($execSelect)->all() :
+          refUser::find()->select($execSelect)->where([ 'company_id' => Yii::$app->user->identity->company_id ])->all();
 
         return $this->render('form_Req',
                              ['model' => $model,
@@ -123,6 +136,7 @@ class RequestController extends MainController {
                                                             ]
                                                         )
                                                         ->all(),
+                              'modelExecutor' => $modelExecutor,
                               'action' => is_null($id) ? 'create' : 'edit']);
     }
 
