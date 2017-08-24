@@ -27,14 +27,14 @@ $filter_count = Yii::$app->session->get('filter_count');
                    'action' => ['list'],
                    'method' => 'get',
                ]); ?>
-  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModal">
+  <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="filterModal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">Укажите фильтры</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="overflow:hidden;">
           <div class="request-search">
             <div class="row">
               <div class="col-md-4">
@@ -96,6 +96,20 @@ $filter_count = Yii::$app->session->get('filter_count');
 
               </div>
             </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <?= $form->field($searchModel, 'executed_by')
+                         ->widget(Select2::classname(), [
+                                'options' => ['placeholder' => 'Укажите исполнителя'],
+                                'pluginOptions' => [ 'allowClear' => true, ],
+                                //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                                'data' => ArrayHelper::map( $modelExecutor , 'user_id','user_name'),
+                            ]);
+                ?>
+              </div>
+            </div>
+
             <div class="row">
               <div class="col-md-6">
                 <?= $form->field($searchModel, 'status_ref_id')

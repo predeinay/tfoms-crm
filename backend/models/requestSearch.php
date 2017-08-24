@@ -37,7 +37,8 @@ class requestSearch extends Requests {
             'reason_id',
             'created_by',
             'from_date','to_date',
-            'surname','name','patronymic'], 'safe'],
+            'surname','name','patronymic',
+            'executed_by'], 'safe'],
       ];
   }
 
@@ -121,7 +122,7 @@ class requestSearch extends Requests {
       $i = 0;
       // для каждой заявки генерим строку в таблицу
       foreach ($modelReqs as $index => $model) {
-        
+
           $i = $index +2;
           $sheet->setCellValue("A".$i, $model->req_id); //'№ п\п'
           $sheet->setCellValue("B".$i, $model->created_on); // Дата
@@ -171,6 +172,7 @@ class requestSearch extends Requests {
   }
 
   public function getDataModel($params) {
+
           $reqModel = Requests::find()
                 ->select('req_id, created_on, user_name, company_name, status.text as status_text,
                           surname, name, patronymic, address,
@@ -215,7 +217,7 @@ class requestSearch extends Requests {
                   $this->surname = Yii::$app->session->get('surname');
                   $this->name = Yii::$app->session->get('name');
                   $this->patronymic = Yii::$app->session->get('patronymic');
-
+                  $this->executed_by = Yii::$app->session->get('executed_by');
 
                   //return $provider;
             } else {
@@ -234,7 +236,9 @@ class requestSearch extends Requests {
               Yii::$app->session->set('surname',$this->surname);
               Yii::$app->session->set('name',$this->name);
               Yii::$app->session->set('patronymic',$this->patronymic);
+              Yii::$app->session->set('executed_by',$this->executed_by);
               Yii::$app->session->set('filter_count', count(array_filter( $params['requestSearch'] )) );
+
             }
 
             /*echo "<pre>";
@@ -252,6 +256,8 @@ class requestSearch extends Requests {
             $reqModel->andFilterWhere(['requests.reason_id' =>  $this->reason_id]);
             $reqModel->andFilterWhere(['requests.created_by' =>  $this->created_by]);
 
+            $reqModel->andFilterWhere(['requests.executed_by' =>  $this->executed_by]);
+
             $reqModel->andFilterWhere(['like','requests.name', $this->name ]);
             $reqModel->andFilterWhere(['like','requests.patronymic', $this->patronymic]);
             $reqModel->andFilterWhere(['like','requests.surname', $this->surname]);
@@ -267,4 +273,20 @@ class requestSearch extends Requests {
     return $reqModel;
   }
 
+  public static function clearSessionFilter() {
+    Yii::$app->session->set('company_id','');
+    Yii::$app->session->set('status_ref_id','');
+    Yii::$app->session->set('form_ref_id','');
+    Yii::$app->session->set('way_ref_id','');
+    Yii::$app->session->set('kind_ref_id','');
+    Yii::$app->session->set('reason_id','');
+    Yii::$app->session->set('created_by','');
+    Yii::$app->session->set('from_date','');
+    Yii::$app->session->set('to_date','');
+    Yii::$app->session->set('surname','');
+    Yii::$app->session->set('name','');
+    Yii::$app->session->set('patronymic','');
+    Yii::$app->session->set('executed_by','');
+    Yii::$app->session->set('filter_count','');
+  }
 }

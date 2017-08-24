@@ -27,7 +27,6 @@ class RequestController extends MainController {
     public function actionList() {
 
         $reqSearchModel = new requestSearch();
-        // pass get arr for filtering
         $provider = $reqSearchModel->search( Yii::$app->request->get() );
 
         return $this->render(
@@ -40,14 +39,16 @@ class RequestController extends MainController {
                      'modelWay' => refCommon::getRefByName('Путь поступления'),
                      'modelKind' => refCommon::getRefByName('Вид обращения'),
                      'modelUser' => refUser::getAll(),
+                     'modelExecutor' => Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->user_id ) ?
+                                           refUser::getAll(null,true) :
+                                           refUser::getAll(Yii::$app->user->identity->company_id,true),
                      'modelReason' => refReason::findAll(['kind_ref_id' => $reqSearchModel->kind_ref_id]),
                     ]
                 );
     }
 
     public function actionFilterClear() {
-      $reqSearchModel = new requestSearch();
-      $reqSearchModel->clearSessionFilter();
+      requestSearch::clearSessionFilter();
       return $this->actionList();
     }
 
@@ -72,39 +73,19 @@ class RequestController extends MainController {
 
         } else {
             $model = new Requests();
+            // default values
             $model->executed_by = Yii::$app->user->identity->user_id;
             $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
-            /*$model->created_on =
-              Yii::$app->myhelper->to_beauty_date_time(
-                  Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate']
-                );*/
             $model->company_id = Yii::$app->user->identity->company_id;
-
-            // Get default status for new request
-            $defaultStatus = refCommon::findOne(
-                                ['type' => 'Статус обращения',
-                                 'text' => 'в работе']
-                             );
-            if ($defaultStatus) {
-                $model->status_ref_id = $defaultStatus->ref_id;
-            }
+            $model->status_ref_id = refCommon::getStatusId('в работе');
         }
 
         $model->created_on = Yii::$app->myhelper->to_beauty_date_time($model->created_on);
         if ($model->birth_day)
         $model->birth_day = Yii::$app->myhelper->to_beauty_date($model->birth_day);
 
-        $execSelect = [
-            'concat(user_name,
-              CASE WHEN level is not null
-                then concat(" уровень представителя " ,level)
-                 else ""
-              END) as user_name',
-            'user_id'
-          ];
         $modelExecutor = Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->user_id ) ?
-          refUser::find()->select($execSelect)->all() :
-          refUser::find()->select($execSelect)->where([ 'company_id' => Yii::$app->user->identity->company_id ])->all();
+          refUser::getAll(null,true) : refUser::getAll(Yii::$app->user->identity->company_id,true);
 
         return $this->render('form_Req',
                              ['model' => $model,
@@ -162,7 +143,6 @@ class RequestController extends MainController {
     public function actionCreate() {
 
         $model = new Requests();
-
         $model->created_by = Yii::$app->user->getId();
 
         if ( $model->load(Yii::$app->request->post()) ) {
@@ -178,7 +158,6 @@ class RequestController extends MainController {
             }
         }
         return $this->redirect(['/request/list']);
-
     }
 
     public function actionDelete($id) {

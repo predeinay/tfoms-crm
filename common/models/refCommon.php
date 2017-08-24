@@ -78,4 +78,11 @@ class refCommon extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getStatusId($statusName) {
+      $statusModel = refCommon::findOne(
+                          ['type' => 'Статус обращения',
+                           'text' => $statusName]
+                       );
+      return $statusModel?$statusModel->ref_id:null;
+    }
 }

@@ -94,22 +94,6 @@ class Requests extends \yii\db\ActiveRecord
 
     }
 
-    public function clearSessionFilter() {
-      Yii::$app->session->set('company_id','');
-      Yii::$app->session->set('status_ref_id','');
-      Yii::$app->session->set('form_ref_id','');
-      Yii::$app->session->set('way_ref_id','');
-      Yii::$app->session->set('kind_ref_id','');
-      Yii::$app->session->set('reason_id','');
-      Yii::$app->session->set('created_by','');
-      Yii::$app->session->set('from_date','');
-      Yii::$app->session->set('to_date','');
-      Yii::$app->session->set('surname','');
-      Yii::$app->session->set('name','');
-      Yii::$app->session->set('patronymic','');
-      Yii::$app->session->set('filter_count','');
-    }
-
     public function validateCreatedOn($attribute) {
       if (!$this->req_id) {
         $sysdate = new \DateTime( \Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'] );
@@ -120,6 +104,10 @@ class Requests extends \yii\db\ActiveRecord
           $this->addError($attribute,str_replace('%DATE_COUNT%',$globalModel->value,self::CREATED_ON_ERROR));
         }
       }
+    }
+
+    public static function getEmpModel() {
+
     }
 
 }
