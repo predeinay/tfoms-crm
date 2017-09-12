@@ -31,6 +31,7 @@ class requestSearch extends Requests {
       return [
           [['status_ref_id',
             'company_id',
+            'claim_company_id',
             'form_ref_id',
             'way_ref_id',
             'kind_ref_id',
@@ -38,7 +39,8 @@ class requestSearch extends Requests {
             'created_by',
             'from_date','to_date',
             'surname','name','patronymic',
-            'executed_by'], 'safe'],
+            'executed_by',
+            'result_ref_id'], 'safe'],
       ];
   }
 
@@ -206,6 +208,7 @@ class requestSearch extends Requests {
                   // если пришли без параметров в GET
 
                   $this->company_id = Yii::$app->session->get('company_id');
+                  $this->claim_company_id = Yii::$app->session->get('claim_company_id');
                   $this->status_ref_id = Yii::$app->session->get('status_ref_id');
                   $this->form_ref_id = Yii::$app->session->get('form_ref_id');
                   $this->way_ref_id = Yii::$app->session->get('way_ref_id');
@@ -218,6 +221,7 @@ class requestSearch extends Requests {
                   $this->name = Yii::$app->session->get('name');
                   $this->patronymic = Yii::$app->session->get('patronymic');
                   $this->executed_by = Yii::$app->session->get('executed_by');
+                  $this->result_ref_id = Yii::$app->session->get('result_ref_id');
 
                   //return $provider;
             } else {
@@ -225,6 +229,7 @@ class requestSearch extends Requests {
               // Если GET параметры прилетели
 
               Yii::$app->session->set('company_id',$this->company_id);
+              Yii::$app->session->set('claim_company_id',$this->claim_company_id);
               Yii::$app->session->set('status_ref_id',$this->status_ref_id);
               Yii::$app->session->set('form_ref_id',$this->form_ref_id);
               Yii::$app->session->set('way_ref_id',$this->way_ref_id);
@@ -237,8 +242,9 @@ class requestSearch extends Requests {
               Yii::$app->session->set('name',$this->name);
               Yii::$app->session->set('patronymic',$this->patronymic);
               Yii::$app->session->set('executed_by',$this->executed_by);
+              Yii::$app->session->set('result_ref_id',$this->result_ref_id);
               Yii::$app->session->set('filter_count', count(array_filter( $params['requestSearch'] )) );
-
+              
             }
 
             /*echo "<pre>";
@@ -249,11 +255,13 @@ class requestSearch extends Requests {
 
 
             $reqModel->andFilterWhere(['requests.company_id' =>  $this->company_id]);
+            $reqModel->andFilterWhere(['requests.claim_company_id' =>  $this->claim_company_id]);
             $reqModel->andFilterWhere(['requests.status_ref_id' =>  $this->status_ref_id]);
             $reqModel->andFilterWhere(['requests.form_ref_id' =>  $this->form_ref_id]);
             $reqModel->andFilterWhere(['requests.way_ref_id' =>  $this->way_ref_id]);
             $reqModel->andFilterWhere(['requests.kind_ref_id' =>  $this->kind_ref_id]);
             $reqModel->andFilterWhere(['requests.reason_id' =>  $this->reason_id]);
+            $reqModel->andFilterWhere(['requests.result_ref_id' =>  $this->result_ref_id]);
             $reqModel->andFilterWhere(['requests.created_by' =>  $this->created_by]);
 
             $reqModel->andFilterWhere(['requests.executed_by' =>  $this->executed_by]);
@@ -275,11 +283,13 @@ class requestSearch extends Requests {
 
   public static function clearSessionFilter() {
     Yii::$app->session->set('company_id','');
+    Yii::$app->session->set('claim_company_id','');
     Yii::$app->session->set('status_ref_id','');
     Yii::$app->session->set('form_ref_id','');
     Yii::$app->session->set('way_ref_id','');
     Yii::$app->session->set('kind_ref_id','');
     Yii::$app->session->set('reason_id','');
+    Yii::$app->session->set('result_ref_id','');
     Yii::$app->session->set('created_by','');
     Yii::$app->session->set('from_date','');
     Yii::$app->session->set('to_date','');

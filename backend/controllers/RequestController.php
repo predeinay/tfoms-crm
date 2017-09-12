@@ -6,19 +6,15 @@ use backend\controllers\MainController;
 
 use Yii;
 
-use yii\db\Expression;
-
 use common\models\refCommon;
 use common\models\refReason;
 use common\models\Requests;
 use common\models\reqComment;
 use common\models\refCompany;
 use common\models\refUser;
-use yii\data\ActiveDataProvider;
 
 use backend\models\requestSearch;
 
-use PHPExcel;
 use PHPExcel_Writer_Excel5;
 
 class RequestController extends MainController {
@@ -43,6 +39,7 @@ class RequestController extends MainController {
                                            refUser::getAll(null,true) :
                                            refUser::getAll(Yii::$app->user->identity->company_id,true),
                      'modelReason' => refReason::findAll(['kind_ref_id' => $reqSearchModel->kind_ref_id]),
+                     'modelResult' => refCommon::getRefResult($reqSearchModel->kind_ref_id)->all(),
                     ]
                 );
     }

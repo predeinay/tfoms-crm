@@ -85,20 +85,53 @@ $filter_count = Yii::$app->session->get('filter_count');
             </div>
             <div class="row">
               <div class="col-md-6">
-                <?= $form->field($searchModel, 'company_id')
+                <?php
+                echo $form->field($searchModel, 'company_id')
+                         ->widget(Select2::classname(), [
+                                'options' => ['placeholder' => '- Зона ответственности -'],
+                                'pluginOptions' => [ 'allowClear' => true, ],
+                                //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                                'data' => ArrayHelper::map( $modelCompany , 'company_id','company_name'),
+                            ]);
+                /*echo $form->field($searchModel, 'company_id')
                          ->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
-                               ['prompt' => '- Зона ответственности -']) ?>
+                               ['prompt' => '- Зона ответственности -']);*/
+                ?>
               </div>
               <div class="col-md-6">
-                <?= $form->field($searchModel, 'created_by')
-                         ->dropDownList(ArrayHelper::map( $modelUser , 'user_id' , 'user_name'),
-                               ['prompt' => '- Пользователь системы -']) ?>
-
+                <?php 
+                echo $form->field($searchModel, 'claim_company_id')
+                         ->widget(Select2::classname(), [
+                                'options' => ['placeholder' => '- Организация на которую жалуются -'],
+                                'pluginOptions' => [ 'allowClear' => true, ],
+                                //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                                'data' => ArrayHelper::map( $modelCompany , 'company_id','company_name'),
+                            ]);
+                /*echo $form->field($searchModel, 'claim_company_id')
+                         ->dropDownList(ArrayHelper::map( $modelCompany , 'company_id' , 'company_name'),
+                               ['prompt' => '- Организация на которую жалуются -']);*/
+                ?>
               </div>
             </div>
+            <div class="row">  
+              <div class="col-md-6">
+                <?= $form->field($searchModel, 'created_by')
+                         ->widget(Select2::classname(), [
+                                'options' => ['placeholder' => 'Пользователь системы'],
+                                'pluginOptions' => [ 'allowClear' => true, ],
+                                //'options' => ['id'=>'reason_id','prompt' => '- Укажите суть обращения -'],
+                                'data' => ArrayHelper::map( $modelUser , 'user_id','user_name'),
+                            ]);
+                ?>
+                  
+                <?php /*$form->field($searchModel, 'created_by')
+                         ->dropDownList(ArrayHelper::map( $modelUser , 'user_id' , 'user_name'),
+                               ['prompt' => '- Пользователь системы -'])*/
+                        ?>
 
-            <div class="row">
-              <div class="col-md-12">
+              </div>
+            
+              <div class="col-md-6">
                 <?= $form->field($searchModel, 'executed_by')
                          ->widget(Select2::classname(), [
                                 'options' => ['placeholder' => 'Укажите исполнителя'],
@@ -145,6 +178,19 @@ $filter_count = Yii::$app->session->get('filter_count');
                                   // 'initialize' => true
                              ],
                      ]); ?>
+              
+            <?= $form->field($searchModel, 'result_ref_id')
+             ->widget(DepDrop::classname(), [
+                    //'type'=>DepDrop::TYPE_SELECT2,
+                    'options' => [ 'prompt' => '- Укажите результат -'],
+                    'data' => ArrayHelper::map( $modelResult , 'ref_id','text'),
+                    'pluginOptions'=>[
+                        'depends'=>['kind_ref_id'],
+                        'placeholder' => '- Укажите результат -',
+                        'url' => yii\helpers\Url::to(['/request/subresult']),
+                        //'initialize' => true
+                    ]
+                ]);  ?>
           </div>
         </div>
         <div class="modal-footer">
