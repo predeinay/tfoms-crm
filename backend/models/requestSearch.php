@@ -40,7 +40,8 @@ class requestSearch extends Requests {
             'from_date','to_date',
             'surname','name','patronymic',
             'executed_by',
-            'result_ref_id'], 'safe'],
+            'result_ref_id',
+            'filterCount'], 'safe'],
       ];
   }
 
@@ -203,50 +204,16 @@ class requestSearch extends Requests {
             }
 
             // load the search form data and validate
-
-            if ( !($this->load($params) && $this->validate()) ) {
-                  // если пришли без параметров в GET
-
-                  $this->company_id = Yii::$app->session->get('company_id');
-                  $this->claim_company_id = Yii::$app->session->get('claim_company_id');
-                  $this->status_ref_id = Yii::$app->session->get('status_ref_id');
-                  $this->form_ref_id = Yii::$app->session->get('form_ref_id');
-                  $this->way_ref_id = Yii::$app->session->get('way_ref_id');
-                  $this->kind_ref_id = Yii::$app->session->get('kind_ref_id');
-                  $this->reason_id = Yii::$app->session->get('reason_id');
-                  $this->created_by = Yii::$app->session->get('created_by');
-                  $this->from_date = Yii::$app->session->get('from_date');
-                  $this->to_date = Yii::$app->session->get('to_date');
-                  $this->surname = Yii::$app->session->get('surname');
-                  $this->name = Yii::$app->session->get('name');
-                  $this->patronymic = Yii::$app->session->get('patronymic');
-                  $this->executed_by = Yii::$app->session->get('executed_by');
-                  $this->result_ref_id = Yii::$app->session->get('result_ref_id');
-
-                  //return $provider;
+            if ( $this->load($params) && $this->validate() ) {
+                $this->filterCount = count(array_filter( $params['requestSearch'] ));
+                Yii::$app->session->set('request_search_model_filter_count',$this->filterCount);
+                Yii::$app->session->set('request_search_model',$params);
             } else {
+                $this->load( Yii::$app->session->get('request_search_model') );
+                $this->filterCount = Yii::$app->session->get('request_search_model_filter_count');
 
-              // Если GET параметры прилетели
-
-              Yii::$app->session->set('company_id',$this->company_id);
-              Yii::$app->session->set('claim_company_id',$this->claim_company_id);
-              Yii::$app->session->set('status_ref_id',$this->status_ref_id);
-              Yii::$app->session->set('form_ref_id',$this->form_ref_id);
-              Yii::$app->session->set('way_ref_id',$this->way_ref_id);
-              Yii::$app->session->set('kind_ref_id',$this->kind_ref_id);
-              Yii::$app->session->set('reason_id',$this->reason_id);
-              Yii::$app->session->set('created_by',$this->created_by);
-              Yii::$app->session->set('from_date',$this->from_date);
-              Yii::$app->session->set('to_date',$this->to_date);
-              Yii::$app->session->set('surname',$this->surname);
-              Yii::$app->session->set('name',$this->name);
-              Yii::$app->session->set('patronymic',$this->patronymic);
-              Yii::$app->session->set('executed_by',$this->executed_by);
-              Yii::$app->session->set('result_ref_id',$this->result_ref_id);
-              Yii::$app->session->set('filter_count', count(array_filter( $params['requestSearch'] )) );
-              
             }
-
+            
             /*echo "<pre>";
             var_dump($params['requestSearch']);
             echo "</pre>";*/
@@ -282,21 +249,7 @@ class requestSearch extends Requests {
   }
 
   public static function clearSessionFilter() {
-    Yii::$app->session->set('company_id','');
-    Yii::$app->session->set('claim_company_id','');
-    Yii::$app->session->set('status_ref_id','');
-    Yii::$app->session->set('form_ref_id','');
-    Yii::$app->session->set('way_ref_id','');
-    Yii::$app->session->set('kind_ref_id','');
-    Yii::$app->session->set('reason_id','');
-    Yii::$app->session->set('result_ref_id','');
-    Yii::$app->session->set('created_by','');
-    Yii::$app->session->set('from_date','');
-    Yii::$app->session->set('to_date','');
-    Yii::$app->session->set('surname','');
-    Yii::$app->session->set('name','');
-    Yii::$app->session->set('patronymic','');
-    Yii::$app->session->set('executed_by','');
-    Yii::$app->session->set('filter_count','');
+    Yii::$app->session->set('request_search_model','');
+    Yii::$app->session->set('request_search_model_filter_count','');
   }
 }

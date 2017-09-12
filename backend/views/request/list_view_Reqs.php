@@ -16,7 +16,7 @@ $this->title = 'Список обращений';
 $this->params['breadcrumbs'][] = $this->title;
 
 
-$filter_count = Yii::$app->session->get('filter_count');
+//$filter_count = Yii::$app->session->get('filter_count');
 
 ?>
 
@@ -230,7 +230,10 @@ $filter_count = Yii::$app->session->get('filter_count');
             <div class="col-lg-12" style="margin-top: 5px;">
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
               <span class="glyphicon glyphicon-filter"> </span>
-              <?= $filter_count == 0 ? '' : '<span class="badge">'.$filter_count.'</span>' ?>
+              <?php
+                echo $searchModel->filterCount == 0 ? '' : '<span class="badge">'.$searchModel->filterCount.'</span>';
+                //echo $filter_count == 0 ? '' : '<span class="badge">'.$filter_count.'</span>';
+              ?>
               </button>
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#printModal">
                 <span class="glyphicon glyphicon-print"> </span>
