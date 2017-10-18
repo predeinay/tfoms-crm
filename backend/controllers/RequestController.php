@@ -78,8 +78,7 @@ class RequestController extends MainController {
         }
 
         $model->created_on = Yii::$app->myhelper->to_beauty_date_time($model->created_on);
-        if ($model->birth_day)
-        $model->birth_day = Yii::$app->myhelper->to_beauty_date($model->birth_day);
+        if ($model->birth_day) $model->birth_day = Yii::$app->myhelper->to_beauty_date($model->birth_day);
 
         $modelExecutor = Yii::$app->user->identity->isTfomsRole( Yii::$app->user->identity->user_id ) ?
           refUser::getAll(null,true) : refUser::getAll(Yii::$app->user->identity->company_id,true);
@@ -118,14 +117,31 @@ class RequestController extends MainController {
                               'action' => is_null($id) ? 'create' : 'edit']);
     }
 
-    // Комментарии
-    public function actionComments($id = null) {
+    // Список Комментариев по указанному обращению
+    // + форма для создания нового комментария
+    public function actionComments($id) {
+      $commentModel = new reqComment();
+      $commentModel->request_id = $id;
 
-        $commentModels = reqComment::findAll(['request_id' => $id]);
+      return $this->render('form_Comments',
+                           ['req_id' => $id,
+                           'newCommentModel' => $commentModel,
+                           'commentsProvider' => reqComment::getDataProvider($id) ]);
 
-        return $this->render('form_Comments',
-                            ['req_id' => $id,
-                             'commentModels' => $commentModels ]);
+    }
+    // создание комментария
+    public function actionCreateComment() {
+      $commentModel = new reqComment();
+      $commentModel->created_by = Yii::$app->user->identity->user_id;
+      $commentModel->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
+      if ($commentModel->load(Yii::$app->request->post())) {
+        if ( $commentModel->validate() && $commentModel->save() ) {
+                parent::flash(true);
+            } else {
+                parent::flash(false);
+            }
+        }
+        return $this->redirect(['/request/comments', 'id' => $commentModel->request_id]);
 
     }
 
@@ -137,6 +153,15 @@ class RequestController extends MainController {
 
     }
 
+    // Записи разговоров
+    public function actionFiles($id = null) {
+
+        return $this->render('form_Records',
+                            ['req_id' => $id ]);
+
+    }
+
+    // Создание обращения
     public function actionCreate() {
 
         $model = new Requests();
@@ -157,6 +182,7 @@ class RequestController extends MainController {
         return $this->redirect(['/request/list']);
     }
 
+    // Удаление обращения
     public function actionDelete($id) {
 
         parent::flash( Requests::findOne($id)->delete() );
@@ -164,6 +190,7 @@ class RequestController extends MainController {
         return $this->redirect(['/request/list']);
     }
 
+    // Изменение обращения
     public function actionUpdate($id) {
 
         $model = Requests::findOne($id);
@@ -185,6 +212,7 @@ class RequestController extends MainController {
 
     }
 
+    // ajax вызов списка подпричин
     public function actionSubreason() {
 
         $kind_ref_id = Yii::$app->request->post()['depdrop_all_params']['kind_ref_id'];
@@ -206,7 +234,7 @@ class RequestController extends MainController {
 
     }
 
-
+    // ajax вызов списка результатов
     public function actionSubresult() {
 
         $kind_ref_id = Yii::$app->request->post()['depdrop_all_params']['kind_ref_id'];
@@ -227,6 +255,7 @@ class RequestController extends MainController {
 
     }
 
+    // ajax
     public function actionIsCustomReason() {
 
         if (Yii::$app->request->post()['reason_id']) {
