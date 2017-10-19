@@ -14,6 +14,9 @@ use common\models\refCompany;
 use common\models\refUser;
 
 use backend\models\requestSearch;
+use backend\models\Uploads;
+use backend\models\upload\UploadRequestFile;
+use yii\web\UploadedFile;
 
 use PHPExcel_Writer_Excel5;
 
@@ -156,8 +159,29 @@ class RequestController extends MainController {
     // Записи разговоров
     public function actionFiles($id = null) {
 
-        return $this->render('form_Records',
-                            ['req_id' => $id ]);
+      $uploadModel = new UploadRequestFile();
+
+      if (Yii::$app->request->isPost) {
+          $uploadModel->file = UploadedFile::getInstance($uploadModel, 'file');
+          if ($uploadModel->upload()) {
+              $requestUpload = new Uploads();
+              $requestUpload->file_name = $uploadModel->file->baseName.'.'.$uploadModel->file->extension;
+              $requestUpload->file_path = $uploadModel->file_path.'/'.$uploadModel->file_name;
+              $requestUpload->request_id = $id;
+              $requestUpload->created_by = Yii::$app->user->identity->user_id;
+              $requestUpload->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
+              if ($requestUpload->validate() && $requestUpload->save()) {
+                parent::flash(true);
+              }
+          } else {
+              parent::flash(false);
+          }
+      }
+
+      return $this->render('form_Request_Uploads',
+                           ['req_id' => $id,
+                           'uploadModel' => $uploadModel,
+                           'uploadsProvider' => Uploads::getDataProvider($id) ]);
 
     }
 

@@ -14,7 +14,7 @@ use common\models\refCommon;
 use common\models\refCompany;
 use common\models\globalConfig;
 
-use backend\models\UploadForm;
+use backend\models\upload\UploadCompanyFile;
 use yii\web\UploadedFile;
 
 class SettingsController extends MainController
@@ -249,7 +249,7 @@ class SettingsController extends MainController
 
         $model = refCompany::find()->with('ref_common');
 
-        $uploadForm = new UploadForm();
+        $uploadForm = new UploadCompanyFile();
 
         if (Yii::$app->request->isPost) {
             $uploadForm->file = UploadedFile::getInstance($uploadForm, 'file');

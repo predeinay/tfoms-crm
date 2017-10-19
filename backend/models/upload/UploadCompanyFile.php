@@ -1,38 +1,18 @@
 <?php
 
-namespace backend\models;
+namespace backend\models\upload;
 
-use yii\base\Model;
-use yii\web\UploadedFile;
 use common\models\refCompany;
 use common\models\refCommon;
+use backend\models\upload\UploadBase;
 
-class UploadForm extends Model
-{
-    /**
-     * @var UploadedFile
-     */
-    public $file;
-    public $file_name;
-    public $file_path;
+class UploadCompanyFile extends UploadBase {
 
     public function rules()
     {
         return [
             [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'xml'],
         ];
-    }
-
-    public function upload()
-    {
-        if ($this->validate()) {
-            $this->file_name = uniqid().$this->file->baseName . '.' . $this->file->extension;
-            $this->file_path = 'uploads';
-            $this->file->saveAs($this->file_path .'/'. $this->file_name);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public function parseMedOrgXml() {
