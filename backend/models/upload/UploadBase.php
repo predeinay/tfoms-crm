@@ -18,12 +18,12 @@ class UploadBase extends Model {
   }
 
   public function upload() {
-    
+
     $base_path = 'uploads';
     $upload_path = '/'.date("Y").'/'.date("m").'/'.date("d");
 
       if ($this->validate()) {
-          $this->file_name = uniqid().$this->file->baseName . '.' . $this->file->extension;
+          $this->file_name = $this->getUniqFileName($this->file->baseName).'.'.$this->file->extension;
           $this->file_path = $base_path.$upload_path;
           if (!file_exists($this->file_path)) {
             mkdir($this->file_path,0777,true);
@@ -34,6 +34,10 @@ class UploadBase extends Model {
           return false;
       }
 
+  }
+
+  private function getUniqFileName($basename) {
+    return uniqid().'_'.hash('crc32', $basename);
   }
 
 }

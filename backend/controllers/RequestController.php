@@ -185,6 +185,14 @@ class RequestController extends MainController {
 
     }
 
+    public function actionFileDownload($reqId, $fileId) {
+      $fileModel = Uploads::find()->where(['file_id' => $fileId,'request_id' => $reqId])->one();
+      $fsFilePath = Yii::getAlias('@webroot').'/'.$fileModel->file_path;
+      if (file_exists($fsFilePath)) {
+        Yii::$app->response->sendFile($fsFilePath,$fileModel->file_name);
+      }
+    }
+
     // Создание обращения
     public function actionCreate() {
 

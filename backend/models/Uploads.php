@@ -30,7 +30,7 @@ class Uploads extends \yii\db\ActiveRecord {
     // вернет провайдер по указанному ID заявки
     public static function getDataProvider($id) {
       $query = self::find()
-                   ->select('request_id, file_name, created_on, user_name, file_path')
+                   ->select('file_id, request_id, file_name, created_on, user_name, file_path')
                    ->innerJoin('ref_users', 'uploads.created_by = ref_users.user_id')
                    ->where(['uploads.request_id' => $id])
                    ->orderBy('uploads.created_on');

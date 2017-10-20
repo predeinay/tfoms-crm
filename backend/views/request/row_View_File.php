@@ -9,7 +9,11 @@ use yii\helpers\Html;
         <div class="panel panel-default" style="margin-bottom:0px;">
           <div class="panel-body">
             <?=
-            Html::a($model->file_name,$model->file_path) ?>
+            Html::a($model->file_name,['file-download',
+                            'reqId'  => $model->request_id,
+                            'fileId' => $model->file_id
+                            ]
+              ) ?>
           </div>
         </div>
       </div>
