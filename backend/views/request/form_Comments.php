@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-lg-12">
-            <?= $this->render('form_Tabs',['req_id' => $req_id ]) ?>
+            <?= $this->render('form_Tabs',['requestModel' => $requestModel ]) ?>
         </div>
     </div>
 
@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
       <div class="col-sm-6" style="margin-top: 15px;">
         <?php $form = ActiveForm::begin([
-              'action' => ['request/create-comment','requestId' => $req_id ],
+              'action' => ['request/create-comment','requestId' => $requestModel->req_id ],
               'id' => 'add-comment-form'
            ]); ?>
         <?= Html::activeHiddenInput($newCommentModel, 'request_id')?>

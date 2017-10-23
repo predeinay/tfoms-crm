@@ -86,7 +86,7 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
         <?php
             if ( $action == 'create' ) {} else {
 
-                echo $this->render('form_Tabs',['req_id' => $model->req_id ]);
+                echo $this->render('form_Tabs',['requestModel' => $model, 'req_id' => $model->req_id ]);
 
             }
         ?>

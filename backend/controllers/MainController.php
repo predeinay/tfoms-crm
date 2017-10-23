@@ -39,7 +39,7 @@ class MainController extends Controller
                                       // ajax actions
                                       'subreason','subresult','is-custom-reason',
                                       // add relation actions
-                                      'comments','records','files','file-download',
+                                      'comments','records','files','file-download','file-delete',
                                       'create-comment',
                                       // report
                                        'print-journal' ],

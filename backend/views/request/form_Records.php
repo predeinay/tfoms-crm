@@ -11,10 +11,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-lg-12">
-            <?= $this->render('form_Tabs',['req_id' => $req_id ]) ?>
+            <?= $this->render('form_Tabs',['requestModel' => $requestModel ]) ?>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-lg-12">
             <em>В разработке..</em>

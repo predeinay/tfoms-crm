@@ -5,18 +5,29 @@ use yii\helpers\Html;
 <div class="comment container-fluid" style="margin-top: 15px;">
   <div class="row">
     <div class="row">
-      <div class="col-lg-12">
-        <div class="panel panel-default" style="margin-bottom:0px;">
-          <div class="panel-body">
+      <div class="panel panel-default" style="margin-bottom:0px;">
+        <div class="panel-body">
+      <div class="col-sm-8">
+
             <?=
             Html::a($model->file_name,['file-download',
                             'reqId'  => $model->request_id,
                             'fileId' => $model->file_id
                             ]
               ) ?>
-          </div>
-        </div>
+
       </div>
+      <div class="col-sm-4">
+        <?=
+        Html::a('<i style="float: right; color: red;" class="glyphicon glyphicon-remove"> </i>',['file-delete',
+                        'reqId'  => $model->request_id,
+                        'fileId' => $model->file_id
+                        ]
+          ) ?>
+      </div>
+    </div>
+  </div>
+      <!-- row end -->
     </div>
     <div class="row">
       <div class="col-lg-12">

@@ -3,6 +3,8 @@
 namespace common\models;
 
 use common\models\globalConfig;
+use common\models\reqComment;
+use backend\models\Uploads;
 use Yii;
 
 class Requests extends \yii\db\ActiveRecord
@@ -108,6 +110,14 @@ class Requests extends \yii\db\ActiveRecord
 
     public static function getEmpModel() {
 
+    }
+
+    public function getFileCount() {
+      return Uploads::find()->where(['request_id' => $this->req_id])->count();
+    }
+
+    public function getCommentCount() {
+      return reqComment::find()->where(['request_id' => $this->req_id])->count();
     }
 
 }

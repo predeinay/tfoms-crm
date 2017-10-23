@@ -127,7 +127,7 @@ class RequestController extends MainController {
       $commentModel->request_id = $id;
 
       return $this->render('form_Comments',
-                           ['req_id' => $id,
+                           ['requestModel' => $model = Requests::findOne($id),
                            'newCommentModel' => $commentModel,
                            'commentsProvider' => reqComment::getDataProvider($id) ]);
 
@@ -149,15 +149,15 @@ class RequestController extends MainController {
     }
 
     // Записи разговоров
-    public function actionRecords($id = null) {
+    public function actionRecords($id) {
 
         return $this->render('form_Records',
-                            ['req_id' => $id ]);
+                             ['requestModel' => Requests::findOne($id)]);
 
     }
 
-    // Записи разговоров
-    public function actionFiles($id = null) {
+    // Прикрелпенные файлы
+    public function actionFiles($id) {
 
       $uploadModel = new UploadRequestFile();
 
@@ -179,9 +179,9 @@ class RequestController extends MainController {
       }
 
       return $this->render('form_Request_Uploads',
-                           ['req_id' => $id,
-                           'uploadModel' => $uploadModel,
-                           'uploadsProvider' => Uploads::getDataProvider($id) ]);
+                           ['requestModel' => Requests::findOne($id),
+                            'uploadModel' => $uploadModel,
+                            'uploadsProvider' => Uploads::getDataProvider($id) ]);
 
     }
 
@@ -191,6 +191,14 @@ class RequestController extends MainController {
       if (file_exists($fsFilePath)) {
         Yii::$app->response->sendFile($fsFilePath,$fileModel->file_name);
       }
+    }
+
+    public function actionFileDelete($reqId, $fileId) {
+      $fileModel = Uploads::find()->where(['file_id' => $fileId,'request_id' => $reqId])->one();
+      $fsFilePath = Yii::getAlias('@webroot').'/'.$fileModel->file_path;
+      unlink($fsFilePath);
+      $fileModel->delete();
+      return $this->redirect(['files','id'=>$reqId]);
     }
 
     // Создание обращения
