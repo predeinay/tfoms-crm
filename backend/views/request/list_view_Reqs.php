@@ -12,6 +12,8 @@ use kartik\date\DatePicker;
 use kartik\widgets\DepDrop;
 use kartik\widgets\Select2;
 
+use backend\models\request\RequestSearchReport;
+
 $this->title = 'Список обращений';
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -99,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
               </div>
               <div class="col-md-6">
-                <?php 
+                <?php
                 echo $form->field($searchModel, 'claim_company_id')
                          ->widget(Select2::classname(), [
                                 'options' => ['placeholder' => '- Организация на которую жалуются -'],
@@ -113,7 +115,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
               </div>
             </div>
-            <div class="row">  
+            <div class="row">
               <div class="col-md-6">
                 <?= $form->field($searchModel, 'created_by')
                          ->widget(Select2::classname(), [
@@ -123,14 +125,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'data' => ArrayHelper::map( $modelUser , 'user_id','user_name'),
                             ]);
                 ?>
-                  
+
                 <?php /*$form->field($searchModel, 'created_by')
                          ->dropDownList(ArrayHelper::map( $modelUser , 'user_id' , 'user_name'),
                                ['prompt' => '- Пользователь системы -'])*/
                         ?>
 
               </div>
-            
+
               <div class="col-md-6">
                 <?= $form->field($searchModel, 'executed_by')
                          ->widget(Select2::classname(), [
@@ -178,7 +180,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                   // 'initialize' => true
                              ],
                      ]); ?>
-              
+
             <?= $form->field($searchModel, 'result_ref_id')
              ->widget(DepDrop::classname(), [
                     //'type'=>DepDrop::TYPE_SELECT2,
@@ -214,8 +216,11 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="modal-body">
             <div class="list-group">
-              <a href="<?= \yii\helpers\Url::to(['request/print-journal']) ?>" class="list-group-item"><span class="glyphicon glyphicon-list-alt"> </span> Электронный журнал</a>
-              <a href="#" class="list-group-item"><span class="glyphicon glyphicon-stats"> </span> Форма №2 по приказу 146</a>
+              <a href="<?= \yii\helpers\Url::to(['request/report','reportType' => RequestSearchReport::SIMPLE_JOURNAL]) ?>" class="list-group-item"><span class="glyphicon glyphicon-list-alt"> </span> Электронный журнал</a>
+              <!--a href="#" class="list-group-item"><span class="glyphicon glyphicon-stats"> </span> Форма №2 по приказу 146</a-->
+              <?= Html::a('<span class="glyphicon glyphicon-stats"> </span> Сводный отчет в разрезе причин обращений',
+                        ['request/report','reportType' => RequestSearchReport::PIVOT_BY_REASON],
+                        ['class'=>'list-group-item']) ?>
             </div>
         </div>
         <!--div class="modal-footer">

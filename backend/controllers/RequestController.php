@@ -13,7 +13,8 @@ use common\models\reqComment;
 use common\models\refCompany;
 use common\models\refUser;
 
-use backend\models\requestSearch;
+use backend\models\request\RequestSearch;
+use backend\models\request\RequestSearchReport;
 use backend\models\Uploads;
 use backend\models\upload\UploadRequestFile;
 use yii\web\UploadedFile;
@@ -25,7 +26,7 @@ class RequestController extends MainController {
     // Список обращений
     public function actionList() {
 
-        $reqSearchModel = new requestSearch();
+        $reqSearchModel = new RequestSearch();
         $provider = $reqSearchModel->search( Yii::$app->request->get() );
 
         return $this->render(
@@ -48,20 +49,17 @@ class RequestController extends MainController {
     }
 
     public function actionFilterClear() {
-      requestSearch::clearSessionFilter();
+      RequestSearch::clearSessionFilter();
       return $this->actionList();
     }
+    
+    public function actionReport($reportType) {
+      $searchModel = new RequestSearch();
+      $searchModel->loadSearchParams(null);
 
-    public function actionPrintJournal() {
-
-        $dataModel = new requestSearch();
-        $xls = $dataModel->printJournal( Yii::$app->request->get() );
-
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename=Журнал_обращений'.date('l jS \of F Y h:i:s A').'.xls ');
-
-        $objWriter = new PHPExcel_Writer_Excel5($xls);
-        $objWriter->save('php://output');
+      $reportModel = new RequestSearchReport($reportType);
+      $reportModel->prepareReport($searchModel);
+      $reportModel->download();
 
     }
 

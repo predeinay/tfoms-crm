@@ -42,7 +42,7 @@ class MainController extends Controller
                                       'comments','records','files','file-download','file-delete',
                                       'create-comment',
                                       // report
-                                       'print-journal' ],
+                                       'print-journal','report' ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
