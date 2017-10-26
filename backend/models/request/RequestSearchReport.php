@@ -44,7 +44,19 @@ class RequestSearchReport extends RequestSearch {
      $sheet = $this->xls->getActiveSheet();
 
      // header
-     $sheet->getRowDimension(1)->setRowHeight(30);
+     $sheet->getRowDimension(1)->setRowHeight(60);
+     $sheet->getColumnDimension('A')->setWidth(20);
+
+     $sheet->getRowDimension(2)->setRowHeight(20);
+     $sheet->getRowDimension(3)->setRowHeight(20);
+     $sheet->getRowDimension(4)->setRowHeight(20);
+     $sheet->getRowDimension(5)->setRowHeight(20);
+
+     $sheet->getStyle('A7')->getAlignment()->setWrapText(true);
+     $sheet->getRowDimension(9)->setRowHeight(-1);
+     $sheet->getRowDimension(10)->setRowHeight(-1);
+     $sheet->getRowDimension(11)->setRowHeight(-1);
+
      $sheet->setTitle('ОБРАЩЕНИЯ ЗАСТРАХОВАННЫХ ЛИЦ');
      $sheet->setCellValue("A1", 'ОБРАЩЕНИЯ ЗАСТРАХОВАННЫХ ЛИЦ');
      $sheet->mergeCells("A1:I1");
@@ -71,19 +83,48 @@ class RequestSearchReport extends RequestSearch {
      $sheet->setCellValue("G5", '7');$sheet->setCellValue("H5", '8');$sheet->setCellValue("I5", '9');
      $i = 5;
      $sql = "
-      SELECT kind.text kind_text,
-             rr.reason_text,
-             rr.reason_code,
-             sum(CASE WHEN form.text = 'устно' then 1 else 0 END) verbally_count,
-             sum(CASE WHEN form.text = 'письменно' then 1 else 0 END) writing_count,
-             sum(CASE WHEN form.text = 'устно' then 1 else 0 END) verbally_count,
-             sum(CASE WHEN form.text = 'письменно' then 1 else 0 END) writing_count,
-             count(*) cc
-        FROM requests r inner join ref_reasons rr on r.reason_id = rr.reason_id
-                        inner join ref_common kind on rr.kind_ref_id = kind.ref_id
-                        inner join ref_common form on r.form_ref_id = form.ref_id
-       group by rr.kind_ref_id, kind.text, r.reason_id, rr.reason_text, rr.reason_code
-       order by kind_text, CONVERT(rr.reason_code,UNSIGNED INTEGER)";
+       select reason_text,
+              reason_code,
+              verbally_tfoms_count,
+              write_tfoms_count,
+              verbally_tfoms_count + write_tfoms_count tfoms_total,
+              verbally_smo_count,
+              write_smo_count,
+              verbally_smo_count + write_smo_count smo_total,
+              cc_all
+         from (
+            select count(r.req_id) cc_all,
+                  rr.reason_text,
+                  reason_code,
+                  count(req_id) cc,
+                  sum(CASE WHEN form.text = 'устно' and resp_type.text = 'ТФОМС' then 1 else 0 END) verbally_tfoms_count,
+                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'ТФОМС' then 1 else 0 END) write_tfoms_count,
+                  sum(CASE WHEN form.text = 'устно' and resp_type.text = 'СМО' then 1 else 0 END) verbally_smo_count,
+                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'СМО' then 1 else 0 END) write_smo_count
+             from ref_reasons rr left join requests r on rr.reason_id = r.reason_id";
+
+      if ($searchModel->claim_company_id) { $sql.= " and r.claim_company_id =  $searchModel->claim_company_id"; }
+      if ($searchModel->status_ref_id) {$sql.= " and r.status_ref_id =  $searchModel->status_ref_id";}
+      if ($searchModel->form_ref_id) {$sql.= " and r.form_ref_id =  $searchModel->form_ref_id";}
+      if ($searchModel->way_ref_id) {$sql.= " and r.way_ref_id =  $searchModel->way_ref_id";}
+      if ($searchModel->kind_ref_id) {$sql.= " and r.kind_ref_id =  $searchModel->kind_ref_id";}
+      if ($searchModel->reason_id) {$sql.= " and r.reason_id =  $searchModel->reason_id";}
+      if ($searchModel->result_ref_id) {$sql.= " and r.result_ref_id =  $searchModel->result_ref_id";}
+      if ($searchModel->created_by) {$sql.= " and r.created_by =  $searchModel->created_by";}
+      if ($searchModel->executed_by) {$sql.= " and r.executed_by =  $searchModel->executed_by";}
+      if ($searchModel->from_date) {$sql.= " and DATE(r.created_on) >=  '".Yii::$app->myhelper->to_date($searchModel->from_date)."'";}
+      if ($searchModel->to_date) {$sql.= " and DATE(r.created_on) <=  '".Yii::$app->myhelper->to_date($searchModel->to_date)."'";}
+
+      $sql.="
+                                 left join ref_common form on r.form_ref_id = form.ref_id
+                                 left join ref_company resp on r.company_id = resp.company_id
+                                 left join ref_common resp_type on resp.type_ref_id = resp_type.ref_id
+            where 1=1 ";
+
+     $sql.="
+            group by rr.reason_id, rr.reason_text
+            order by CONVERT(rr.reason_code,UNSIGNED INTEGER)
+          ) data";
 
        $data = Yii::$app->db->createCommand($sql)->queryAll();
        foreach ($data as $index => $row) {
@@ -91,9 +132,13 @@ class RequestSearchReport extends RequestSearch {
          //$index+6;
          $sheet->setCellValue("A".($index+6),$row['reason_text'] );
          $sheet->setCellValue("B".($index+6),$row['reason_code'] );
-         $sheet->setCellValue("C".($index+6),$row['verbally_count'] );
-         $sheet->setCellValue("D".($index+6),$row['writing_count'] );
-         $sheet->setCellValue("I".($index+6),$row['cc'] );
+         $sheet->setCellValue("C".($index+6),$row['verbally_tfoms_count'] );
+         $sheet->setCellValue("D".($index+6),$row['write_tfoms_count'] );
+         $sheet->setCellValue("E".($index+6),$row['tfoms_total'] );
+         $sheet->setCellValue("F".($index+6),$row['verbally_smo_count'] );
+         $sheet->setCellValue("G".($index+6),$row['write_smo_count'] );
+         $sheet->setCellValue("H".($index+6),$row['smo_total'] );
+         $sheet->setCellValue("I".($index+6),$row['cc_all'] );
        }
      // set border
      $this->xls->getActiveSheet()->getStyle('A1:I'.$i)->applyFromArray($BStyle);
