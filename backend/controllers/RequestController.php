@@ -52,7 +52,7 @@ class RequestController extends MainController {
       RequestSearch::clearSessionFilter();
       return $this->actionList();
     }
-    
+
     public function actionReport($reportType) {
       $searchModel = new RequestSearch();
       $searchModel->loadSearchParams(null);

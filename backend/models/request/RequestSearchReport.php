@@ -5,6 +5,7 @@ use Yii;
 use PHPExcel;
 use PHPExcel_Style_Border;
 use PHPExcel_Writer_Excel5;
+use PHPExcel_IOFactory;
 use Exception;
 
 class RequestSearchReport extends RequestSearch {
@@ -30,7 +31,8 @@ class RequestSearchReport extends RequestSearch {
    }
 
    private function pivotByReason($searchModel) {
-     $this->xls = new PHPExcel();
+     $this->xls = PHPExcel_IOFactory::load('reports_tpl/my_rep1.xls');
+     //$this->xls = new PHPExcel();
      $this->fileName = 'Обращения_свод_по_причинам_'.date('l jS \of F Y h:i:s A').'.xls';
      $BStyle = [
        'borders' => [
@@ -44,7 +46,7 @@ class RequestSearchReport extends RequestSearch {
      $sheet = $this->xls->getActiveSheet();
 
      // header
-     $sheet->getRowDimension(1)->setRowHeight(60);
+     /*$sheet->getRowDimension(1)->setRowHeight(60);
      $sheet->getColumnDimension('A')->setWidth(20);
 
      $sheet->getRowDimension(2)->setRowHeight(20);
@@ -80,10 +82,11 @@ class RequestSearchReport extends RequestSearch {
      $sheet->mergeCells("I3:I4");
      $sheet->setCellValue("A5", '1');$sheet->setCellValue("B5", '2');$sheet->setCellValue("C5", '3');
      $sheet->setCellValue("D5", '4');$sheet->setCellValue("E5", '5');$sheet->setCellValue("F5", '6');
-     $sheet->setCellValue("G5", '7');$sheet->setCellValue("H5", '8');$sheet->setCellValue("I5", '9');
+     $sheet->setCellValue("G5", '7');$sheet->setCellValue("H5", '8');$sheet->setCellValue("I5", '9');*/
      $i = 5;
      $sql = "
-       select reason_text,
+       select kind_text,
+              reason_text reason_text,
               reason_code,
               verbally_tfoms_count,
               write_tfoms_count,
@@ -93,14 +96,20 @@ class RequestSearchReport extends RequestSearch {
               verbally_smo_count + write_smo_count smo_total,
               cc_all
          from (
-            select count(r.req_id) cc_all,
+            select kind.text kind_text,
+                  count(r.req_id) cc_all,
                   rr.reason_text,
                   reason_code,
                   count(req_id) cc,
                   sum(CASE WHEN form.text = 'устно' and resp_type.text = 'ТФОМС' then 1 else 0 END) verbally_tfoms_count,
                   sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'ТФОМС' then 1 else 0 END) write_tfoms_count,
                   sum(CASE WHEN form.text = 'устно' and resp_type.text = 'СМО' then 1 else 0 END) verbally_smo_count,
-                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'СМО' then 1 else 0 END) write_smo_count
+                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'СМО' then 1 else 0 END) write_smo_count,
+                  SUBSTRING_INDEX(reason_code,'.',1) a,
+                  CASE
+                    WHEN instr(reason_code,'.') >0 
+                     then substr(reason_code,1+instr(reason_code,'.'))
+                  END b
              from ref_reasons rr left join requests r on rr.reason_id = r.reason_id";
 
       if ($searchModel->claim_company_id) { $sql.= " and r.claim_company_id =  $searchModel->claim_company_id"; }
@@ -119,26 +128,68 @@ class RequestSearchReport extends RequestSearch {
                                  left join ref_common form on r.form_ref_id = form.ref_id
                                  left join ref_company resp on r.company_id = resp.company_id
                                  left join ref_common resp_type on resp.type_ref_id = resp_type.ref_id
+                                 left join ref_common kind on rr.kind_ref_id  = kind.ref_id
             where 1=1 ";
 
      $sql.="
-            group by rr.reason_id, rr.reason_text
-            order by CONVERT(rr.reason_code,UNSIGNED INTEGER)
-          ) data";
+            group by kind.text, rr.reason_id, rr.reason_text
+            
+          ) data 
+            order by CASE 
+                      WHEN kind_text = 'Жалоба' then 1
+                      WHEN kind_text = 'Заявление' then 2
+                      WHEN kind_text = 'Консультация' then 3
+                      else 4
+                     END , 
+                     cast(a as UNSIGNED),cast(b as DECIMAL(10,6))";
 
        $data = Yii::$app->db->createCommand($sql)->queryAll();
-       foreach ($data as $index => $row) {
-         $i++;
-         //$index+6;
-         $sheet->setCellValue("A".($index+6),$row['reason_text'] );
-         $sheet->setCellValue("B".($index+6),$row['reason_code'] );
-         $sheet->setCellValue("C".($index+6),$row['verbally_tfoms_count'] );
-         $sheet->setCellValue("D".($index+6),$row['write_tfoms_count'] );
-         $sheet->setCellValue("E".($index+6),$row['tfoms_total'] );
-         $sheet->setCellValue("F".($index+6),$row['verbally_smo_count'] );
-         $sheet->setCellValue("G".($index+6),$row['write_smo_count'] );
-         $sheet->setCellValue("H".($index+6),$row['smo_total'] );
-         $sheet->setCellValue("I".($index+6),$row['cc_all'] );
+       $verbally_tfoms_count = 0;
+       $write_tfoms_count = 0;
+       $tfoms_total = 0;
+       $verbally_smo_count = 0;
+       $write_smo_count = 0;
+       $smo_total = 0;
+       $cc_all = 0;
+       $last_kind = 'last_kind';
+       $index = 0;
+       foreach ($data as $ind => $row) {
+           
+         if ($row['kind_text'] == 'Жалоба') {
+             $verbally_tfoms_count+=$row['verbally_tfoms_count'];
+             $write_tfoms_count+=$row['write_tfoms_count'];
+             $tfoms_total+=$row['tfoms_total'];
+             $verbally_smo_count+=$row['verbally_smo_count'];
+             $write_smo_count+=$row['write_smo_count'];
+             $smo_total+=$row['smo_total'];
+             $cc_all+=$row['cc_all'];
+         } else {
+             $i++;
+             $index++;
+             if ($last_kind == 'Жалоба') {
+                 $i++;
+                $sheet->setCellValue("A".($index+6),'Жалоба' );
+                $sheet->setCellValue("B".($index+6),2 );
+                $sheet->setCellValue("C".($index+6), $verbally_tfoms_count);
+                $sheet->setCellValue("D".($index+6),$write_tfoms_count );
+                $sheet->setCellValue("E".($index+6),$tfoms_total );
+                $sheet->setCellValue("F".($index+6),$verbally_smo_count );
+                $sheet->setCellValue("G".($index+6),$write_smo_count );
+                $sheet->setCellValue("H".($index+6),$smo_total );
+                $sheet->setCellValue("I".($index+6),$cc_all );
+             } else {
+                $sheet->setCellValue("A".($index+6),$row['reason_text'] );
+                $sheet->setCellValue("B".($index+6),$row['reason_code'] );
+                $sheet->setCellValue("C".($index+6),$row['verbally_tfoms_count'] );
+                $sheet->setCellValue("D".($index+6),$row['write_tfoms_count'] );
+                $sheet->setCellValue("E".($index+6),$row['tfoms_total'] );
+                $sheet->setCellValue("F".($index+6),$row['verbally_smo_count'] );
+                $sheet->setCellValue("G".($index+6),$row['write_smo_count'] );
+                $sheet->setCellValue("H".($index+6),$row['smo_total'] );
+                $sheet->setCellValue("I".($index+6),$row['cc_all'] );
+             }
+         }
+         $last_kind = $row['kind_text'];
        }
      // set border
      $this->xls->getActiveSheet()->getStyle('A1:I'.$i)->applyFromArray($BStyle);
