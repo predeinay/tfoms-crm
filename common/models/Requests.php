@@ -20,7 +20,8 @@ class Requests extends \yii\db\ActiveRecord
     public $reason_text;
     public $result_text;
 
-    const CREATED_ON_ERROR = 'Нельзя указывать дату регистрации менее %DATE_COUNT% дней от текущей даты';
+    const CREATED_ON_PAST_ERROR = 'Нельзя указывать дату регистрации менее %DATE_COUNT% дней от текущей даты';
+    const CREATED_ON_FUTURE_ERROR = 'Нельзя указывать дату регистрации больше чем текущая дата';
 
     public static function tableName() {
         return 'requests';
@@ -101,9 +102,13 @@ class Requests extends \yii\db\ActiveRecord
         $sysdate = new \DateTime( \Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'] );
         $created_on = new \DateTime($this->created_on);
         $globalModel = globalConfig::find()->where(['param' => 'Кол-во дней для регистрации задним числом'])->one();
+        
+        if ($created_on > $sysdate) {
+            $this->addError($attribute,self::CREATED_ON_FUTURE_ERROR);
+        }
         $created_on->add(new \ DateInterval('P'.$globalModel->value.'D'));
         if ($sysdate>$created_on) {
-          $this->addError($attribute,str_replace('%DATE_COUNT%',$globalModel->value,self::CREATED_ON_ERROR));
+          $this->addError($attribute,str_replace('%DATE_COUNT%',$globalModel->value,self::CREATED_ON_PAST_ERROR));
         }
       }
     }
