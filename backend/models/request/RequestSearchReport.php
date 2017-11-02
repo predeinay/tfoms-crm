@@ -31,6 +31,7 @@ class RequestSearchReport extends RequestSearch {
    }
 
    private function pivotByReason($searchModel) {
+     
      $this->xls = PHPExcel_IOFactory::load('reports_tpl/my_rep1.xls');
      //$this->xls = new PHPExcel();
      $this->fileName = 'Обращения_свод_по_причинам_'.date('l jS \of F Y h:i:s A').'.xls';
@@ -83,11 +84,11 @@ class RequestSearchReport extends RequestSearch {
      $sheet->setCellValue("A5", '1');$sheet->setCellValue("B5", '2');$sheet->setCellValue("C5", '3');
      $sheet->setCellValue("D5", '4');$sheet->setCellValue("E5", '5');$sheet->setCellValue("F5", '6');
      $sheet->setCellValue("G5", '7');$sheet->setCellValue("H5", '8');$sheet->setCellValue("I5", '9');*/
-     $i = 5;
+     
      $sql = "
        select kind_text,
               reason_text reason_text,
-              reason_code,
+              reason_code reason_code,
               verbally_tfoms_count,
               write_tfoms_count,
               verbally_tfoms_count + write_tfoms_count tfoms_total,
@@ -144,6 +145,8 @@ class RequestSearchReport extends RequestSearch {
                      cast(a as UNSIGNED),cast(b as DECIMAL(10,6))";
 
        $data = Yii::$app->db->createCommand($sql)->queryAll();
+       
+       // preprocessing data
        $verbally_tfoms_count = 0;
        $write_tfoms_count = 0;
        $tfoms_total = 0;
@@ -152,48 +155,164 @@ class RequestSearchReport extends RequestSearch {
        $smo_total = 0;
        $cc_all = 0;
        $last_kind = 'last_kind';
-       $index = 0;
+       
+       $dataAfter = [];
+       //$reasonCodes = [];
+       //$index = 6;
        foreach ($data as $ind => $row) {
            
-         if ($row['kind_text'] == 'Жалоба') {
-             $verbally_tfoms_count+=$row['verbally_tfoms_count'];
-             $write_tfoms_count+=$row['write_tfoms_count'];
-             $tfoms_total+=$row['tfoms_total'];
-             $verbally_smo_count+=$row['verbally_smo_count'];
-             $write_smo_count+=$row['write_smo_count'];
-             $smo_total+=$row['smo_total'];
-             $cc_all+=$row['cc_all'];
-         } else {
-             $i++;
-             $index++;
-             if ($last_kind == 'Жалоба') {
-                 $i++;
-                $sheet->setCellValue("A".($index+6),'Жалоба' );
-                $sheet->setCellValue("B".($index+6),2 );
-                $sheet->setCellValue("C".($index+6), $verbally_tfoms_count);
-                $sheet->setCellValue("D".($index+6),$write_tfoms_count );
-                $sheet->setCellValue("E".($index+6),$tfoms_total );
-                $sheet->setCellValue("F".($index+6),$verbally_smo_count );
-                $sheet->setCellValue("G".($index+6),$write_smo_count );
-                $sheet->setCellValue("H".($index+6),$smo_total );
-                $sheet->setCellValue("I".($index+6),$cc_all );
-             } else {
-                $sheet->setCellValue("A".($index+6),$row['reason_text'] );
-                $sheet->setCellValue("B".($index+6),$row['reason_code'] );
-                $sheet->setCellValue("C".($index+6),$row['verbally_tfoms_count'] );
-                $sheet->setCellValue("D".($index+6),$row['write_tfoms_count'] );
-                $sheet->setCellValue("E".($index+6),$row['tfoms_total'] );
-                $sheet->setCellValue("F".($index+6),$row['verbally_smo_count'] );
-                $sheet->setCellValue("G".($index+6),$row['write_smo_count'] );
-                $sheet->setCellValue("H".($index+6),$row['smo_total'] );
-                $sheet->setCellValue("I".($index+6),$row['cc_all'] );
-             }
-         }
-         $last_kind = $row['kind_text'];
+            if ($row['kind_text'] == 'Жалоба') {
+              $verbally_tfoms_count+=$row['verbally_tfoms_count'];
+              $write_tfoms_count+=$row['write_tfoms_count'];
+              $tfoms_total+=$row['tfoms_total'];
+              $verbally_smo_count+=$row['verbally_smo_count'];
+              $write_smo_count+=$row['write_smo_count'];
+              $smo_total+=$row['smo_total'];
+              $cc_all+=$row['cc_all'];
+              $last_kind = $row['kind_text'];
+              continue;
+            } 
+           
+           if ($last_kind == 'Жалоба') {
+               $dataAfter['2 '] = [
+                'reason_text' => 'Жалоба',
+                'reason_code' => '2',
+                'verbally_tfoms_count' => $verbally_tfoms_count,
+                'write_tfoms_count' => $write_tfoms_count,
+                'tfoms_total' => $tfoms_total,
+                'verbally_smo_count' => $verbally_smo_count,
+                'write_smo_count' => $write_smo_count,
+                'smo_total' => $smo_total,
+                'cc_all' => $cc_all
+                ];
+           }
+           if ( substr_count($row['reason_code'],'.') == 1 ) {
+               $groupKey = substr($row['reason_code'],0,strpos($row['reason_code'], '.',0)).' ';
+               if (!key_exists($groupKey, $dataAfter)) {
+                   $dataAfter[$groupKey] = [
+                        'reason_text' => '',
+                        'reason_code' => $groupKey,
+                        'verbally_tfoms_count' => 0,
+                        'write_tfoms_count' => 0,
+                        'tfoms_total' => 0,
+                        'verbally_smo_count' => 0,
+                        'write_smo_count' => 0,
+                        'smo_total' => 0,
+                        'cc_all' => 0
+                     ];
+               }
+           } else if ( substr_count($row['reason_code'],'.') == 2 ) {
+               $groupKey = substr(
+                       $row['reason_code'],
+                       0,
+                       strpos($row['reason_code'], '.',strpos($row['reason_code'], '.',0)+1)
+                ).' ';
+               if (!key_exists($groupKey, $dataAfter)) {
+                $dataAfter[$groupKey] = [
+                         'reason_text' => '',
+                         'reason_code' => $groupKey,
+                         'verbally_tfoms_count' => 0,
+                         'write_tfoms_count' => 0,
+                         'tfoms_total' => 0,
+                         'verbally_smo_count' => 0,
+                         'write_smo_count' => 0,
+                         'smo_total' => 0,
+                         'cc_all' => 0
+                      ];
+               }
+           }
+           
+           $dataAfter[$row['reason_code'].' '] = [
+               'reason_text' => $row['reason_text'],
+               'reason_code' => $row['reason_code'],
+               'verbally_tfoms_count' => $row['verbally_tfoms_count'],
+               'write_tfoms_count' => $row['write_tfoms_count'],
+               'tfoms_total' => $row['tfoms_total'],
+               'verbally_smo_count' => $row['verbally_smo_count'],
+               'write_smo_count' => $row['write_smo_count'],
+               'smo_total' => $row['smo_total'],
+               'cc_all' => $row['cc_all']
+            ];
+           $last_kind = $row['kind_text'];
+           //$index++;
        }
+       // grouping for doubles, unset last added double
+       $lastInd = '0';
+       foreach ($dataAfter as $ind => $row) {
+           //var_dump($lastInd .'=='. $row['reason_code']);
+           if ( $lastInd == $row['reason_code'] ) {
+               unset($dataAfter[$ind]);
+           }
+           $lastInd = $ind;
+       }
+       
+       // find in arr x.x.x to sum for x.x
+       foreach ($dataAfter as $ind => $row) {
+           
+           if (substr_count($row['reason_code'],'.') == 2) {
+               
+               $groupKey = substr($ind,0,strpos($ind, '.',strpos($ind, '.',0)+1)).' ';
+               $dataAfter[$groupKey]['verbally_tfoms_count'] = $dataAfter[$groupKey]['verbally_tfoms_count'] + $row['verbally_tfoms_count'];
+               $dataAfter[$groupKey]['write_tfoms_count'] = $dataAfter[$groupKey]['write_tfoms_count'] + $row['write_tfoms_count'];
+               $dataAfter[$groupKey]['tfoms_total'] = $dataAfter[$groupKey]['tfoms_total'] + $row['tfoms_total'];
+               $dataAfter[$groupKey]['verbally_smo_count'] = $dataAfter[$groupKey]['verbally_smo_count'] + $row['verbally_smo_count'];
+               $dataAfter[$groupKey]['write_smo_count'] = $dataAfter[$groupKey]['write_smo_count'] + $row['write_smo_count'];
+               $dataAfter[$groupKey]['smo_total'] = $dataAfter[$groupKey]['smo_total'] + $row['smo_total'];
+               $dataAfter[$groupKey]['cc_all'] = $dataAfter[$groupKey]['cc_all'] + $row['cc_all'];
+           }
+       }
+       
+       // find in arr x.x to sum for x
+       foreach ($dataAfter as $ind => $row) {
+           if (substr_count($row['reason_code'],'.') == 1) {
+               
+               $groupKey = substr($ind,0,strpos($ind, '.',0)).' ';
+               
+               $dataAfter[$groupKey]['verbally_tfoms_count'] = $dataAfter[$groupKey]['verbally_tfoms_count'] + $row['verbally_tfoms_count'];
+               $dataAfter[$groupKey]['write_tfoms_count'] = $dataAfter[$groupKey]['write_tfoms_count'] + $row['write_tfoms_count'];
+               $dataAfter[$groupKey]['tfoms_total'] = $dataAfter[$groupKey]['tfoms_total'] + $row['tfoms_total'];
+               $dataAfter[$groupKey]['verbally_smo_count'] = $dataAfter[$groupKey]['verbally_smo_count'] + $row['verbally_smo_count'];
+               $dataAfter[$groupKey]['write_smo_count'] = $dataAfter[$groupKey]['write_smo_count'] + $row['write_smo_count'];
+               $dataAfter[$groupKey]['smo_total'] = $dataAfter[$groupKey]['smo_total'] + $row['smo_total'];
+               $dataAfter[$groupKey]['cc_all'] = $dataAfter[$groupKey]['cc_all'] + $row['cc_all'];
+           }
+       }
+       
+       // name empty reasons:
+       foreach ($dataAfter as $ind => $row) {
+           if ($ind == '3 ') { $dataAfter[$ind]['reason_text'] = 'Заявлений, всего: в т.ч.:'; }
+           if ($ind == '3.2 ') { $dataAfter[$ind]['reason_text'] = 'о выборе и замене СМО, в том числе:'; }
+           if ($ind == '3.5 ') { $dataAfter[$ind]['reason_text'] = 'о выдаче дубликата (переоформлении) полиса ОМС, в том числе:'; }
+           if ($ind == '3.6 ') { $dataAfter[$ind]['reason_text'] = 'другие'; }
+           if ($ind == '4 ') { $dataAfter[$ind]['reason_text'] = 'Обращения за консультацией (разъяснением), в том числе:'; }
+           if ($ind == '4.1 ') { $dataAfter[$ind]['reason_text'] = 'об обеспечении полисами ОМС, в т.ч.:'; }
+           if ($ind == '4.12 ') { $dataAfter[$ind]['reason_text'] = 'о взимании денежных средств за медицинскую помощь по программам ОМС, в том числе:'; }
+           
+       }
+       
+       $i = 6;
+       foreach ($dataAfter as $ind => $row) {
+           if (substr_count($row['reason_code'],'.') == 1) {
+               $sheet->setCellValue("A".($i),'  '.$row['reason_text'] );
+           } else if (substr_count($row['reason_code'],'.') == 2) {
+               $sheet->setCellValue("A".($i),'    '.$row['reason_text'] );
+           } else {
+               $sheet->setCellValue("A".($i),$row['reason_text'] );
+           }
+            
+            $sheet->setCellValue("B".($i),$ind );
+            $sheet->setCellValue("C".($i),$row['verbally_tfoms_count'] );
+            $sheet->setCellValue("D".($i),$row['write_tfoms_count'] );
+            $sheet->setCellValue("E".($i),$row['tfoms_total'] );
+            $sheet->setCellValue("F".($i),$row['verbally_smo_count'] );
+            $sheet->setCellValue("G".($i),$row['write_smo_count'] );
+            $sheet->setCellValue("H".($i),$row['smo_total'] );
+            $sheet->setCellValue("I".($i),$row['cc_all'] );
+            $i++;
+        }
      // set border
-     $this->xls->getActiveSheet()->getStyle('A1:I'.$i)->applyFromArray($BStyle);
-     $sheet->getStyle('A1:I'.$i)->getAlignment()->setWrapText(true);
+     $this->xls->getActiveSheet()->getStyle('A1:I'.(count($dataAfter)+5))->applyFromArray($BStyle);
+     $sheet->getStyle('A1:I'.(count($dataAfter)+5))->getAlignment()->setWrapText(true);
      $sheet->getRowDimension(2)->setRowHeight(-1);
    }
 
