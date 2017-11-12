@@ -85,6 +85,98 @@ class RequestSearchReport extends RequestSearch {
      $sheet->setCellValue("D5", '4');$sheet->setCellValue("E5", '5');$sheet->setCellValue("F5", '6');
      $sheet->setCellValue("G5", '7');$sheet->setCellValue("H5", '8');$sheet->setCellValue("I5", '9');*/
      
+     // I part of report
+     $sql_1 = "select way_text,
+                verbally_tfoms_count,
+                write_tfoms_count,
+                verbally_tfoms_count + write_tfoms_count tfoms_total,
+                verbally_smo_count,
+                write_smo_count,
+                verbally_smo_count + write_smo_count smo_total,
+                cc_all      
+           from (
+         select way.text way_text, 
+                count(r.req_id) cc_all,
+                way.ref_id,
+                    sum(CASE WHEN form.text = 'устно' and resp_type.text = 'ТФОМС' then 1 else 0 END) verbally_tfoms_count,
+                sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'ТФОМС' then 1 else 0 END) write_tfoms_count,
+                sum(CASE WHEN form.text = 'устно' and resp_type.text = 'СМО' then 1 else 0 END) verbally_smo_count,
+                sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'СМО' then 1 else 0 END) write_smo_count
+           from ref_common way left join requests r on way.ref_id = r.way_ref_id";
+             
+      if ($searchModel->claim_company_id) { $sql_1.= " and r.claim_company_id =  $searchModel->claim_company_id"; }
+      if ($searchModel->status_ref_id) {$sql_1.= " and r.status_ref_id =  $searchModel->status_ref_id";}
+      if ($searchModel->form_ref_id) {$sql_1.= " and r.form_ref_id =  $searchModel->form_ref_id";}
+      if ($searchModel->way_ref_id) {$sql_1.= " and r.way_ref_id =  $searchModel->way_ref_id";}
+      if ($searchModel->kind_ref_id) {$sql_1.= " and r.kind_ref_id =  $searchModel->kind_ref_id";}
+      if ($searchModel->reason_id) {$sql_1.= " and r.reason_id =  $searchModel->reason_id";}
+      if ($searchModel->result_ref_id) {$sql_1.= " and r.result_ref_id =  $searchModel->result_ref_id";}
+      if ($searchModel->created_by) {$sql_1.= " and r.created_by =  $searchModel->created_by";}
+      if ($searchModel->executed_by) {$sql_1.= " and r.executed_by =  $searchModel->executed_by";}
+      if ($searchModel->from_date) {$sql_1.= " and DATE(r.created_on) >=  '".Yii::$app->myhelper->to_date($searchModel->from_date)."'";}
+      if ($searchModel->to_date) {$sql_1.= " and DATE(r.created_on) <=  '".Yii::$app->myhelper->to_date($searchModel->to_date)."'";}
+      
+      $sql_1 .=       
+                              " left join ref_common form on r.form_ref_id = form.ref_id
+                               left join ref_company resp on r.company_id = resp.company_id
+                               left join ref_common resp_type on resp.type_ref_id = resp_type.ref_id
+          where way.type = 'Путь поступления'
+          group by way.ref_id, way.text
+          order by case when way_text = 'По телефону горячей линии (старый телефон)' then 0 else 1 end,
+                   case when way_text = 'По электронной почте' then 0 else 1 end
+         ) raw";
+    
+    // execute sql
+    $data = Yii::$app->db->createCommand($sql_1)->queryAll();
+      
+    //arr to store final data
+    $dataAfter = []; 
+     
+    // preprocessing data
+    $verbally_tfoms_count = 0;
+    $write_tfoms_count = 0;
+    $tfoms_total = 0;
+    $verbally_smo_count = 0;
+    $write_smo_count = 0;
+    $smo_total = 0;
+    $cc_all = 0;
+
+    foreach ($data as $ind => $row) {
+        $verbally_tfoms_count += $row['verbally_tfoms_count'];
+        $write_tfoms_count += $row['write_tfoms_count'];
+        $tfoms_total += $row['tfoms_total'];
+        $verbally_smo_count += $row['verbally_smo_count'];
+        $write_smo_count += $row['write_smo_count'];
+        $smo_total += $row['smo_total'];
+        $cc_all += $row['cc_all'];
+    }
+    $i = 6;
+    $sheet->setCellValue("A".($i),'Всего обращений, в том числе: ' );
+    $sheet->setCellValue("B".($i),'1 ' );
+    $sheet->setCellValue("C".($i),$verbally_tfoms_count );
+    $sheet->setCellValue("D".($i),$write_tfoms_count );
+    $sheet->setCellValue("E".($i),$tfoms_total );
+    $sheet->setCellValue("F".($i),$verbally_smo_count );
+    $sheet->setCellValue("G".($i),$write_smo_count );
+    $sheet->setCellValue("H".($i),$smo_total );
+    $sheet->setCellValue("I".($i),$cc_all );
+    $i++;
+    // get only 2 first rows see order by in sql
+    foreach ($data as $ind => $row) {
+        if ($ind>1) {break;}
+        $sheet->setCellValue("A".($i),$row['way_text'] );
+        $sheet->setCellValue("B".($i),'1.'.($ind+1).' ' );
+        $sheet->setCellValue("C".($i),$row['verbally_tfoms_count'] );
+        $sheet->setCellValue("D".($i),$row['write_tfoms_count'] );
+        $sheet->setCellValue("E".($i),$row['tfoms_total'] );
+        $sheet->setCellValue("F".($i),$row['verbally_smo_count'] );
+        $sheet->setCellValue("G".($i),$row['write_smo_count'] );
+        $sheet->setCellValue("H".($i),$row['smo_total'] );
+        $sheet->setCellValue("I".($i),$row['cc_all'] );
+        $i++;
+    }
+     
+     // II part of report
      $sql = "
        select kind_text,
               reason_text reason_text,
@@ -290,7 +382,6 @@ class RequestSearchReport extends RequestSearch {
            
        }
        
-       $i = 6;
        foreach ($dataAfter as $ind => $row) {
            if (substr_count($row['reason_code'],'.') == 1) {
                $sheet->setCellValue("A".($i),'  '.$row['reason_text'] );
