@@ -21,7 +21,7 @@ class RequestSearchReport extends RequestSearch {
        $this->reportType = $reportType;
   }
 
-  public function prepareReport($searchModel) {
+   public function prepareReport($searchModel) {
     if (method_exists($this,$this->reportType )) {
       $method = $this->reportType;
       $this->$method($searchModel);
@@ -253,6 +253,7 @@ class RequestSearchReport extends RequestSearch {
        //$index = 6;
        foreach ($data as $ind => $row) {
            
+            // если жалобы - группируем в одну запись
             if ($row['kind_text'] == 'Жалоба') {
               $verbally_tfoms_count+=$row['verbally_tfoms_count'];
               $write_tfoms_count+=$row['write_tfoms_count'];
@@ -265,6 +266,7 @@ class RequestSearchReport extends RequestSearch {
               continue;
             } 
            
+           // если сейчас не жалобы - складываем накопленные данные в массив пост обработки
            if ($last_kind == 'Жалоба') {
                $dataAfter['2 '] = [
                 'reason_text' => 'Жалоба',
@@ -278,6 +280,9 @@ class RequestSearchReport extends RequestSearch {
                 'cc_all' => $cc_all
                 ];
            }
+           // Создаем записи ключи в массиве постобработки
+           // для причин, которых может не быть
+           // если есть 1.1, а 1 нет
            if ( substr_count($row['reason_code'],'.') == 1 ) {
                $groupKey = substr($row['reason_code'],0,strpos($row['reason_code'], '.',0)).' ';
                if (!key_exists($groupKey, $dataAfter)) {
@@ -294,6 +299,9 @@ class RequestSearchReport extends RequestSearch {
                      ];
                }
            } else if ( substr_count($row['reason_code'],'.') == 2 ) {
+                // Создаем записи ключи в массиве постобработки
+                // для причин, которых может не быть
+                // если есть 1.1.1, а 1.1 нет
                $groupKey = substr(
                        $row['reason_code'],
                        0,
@@ -328,6 +336,10 @@ class RequestSearchReport extends RequestSearch {
            $last_kind = $row['kind_text'];
            //$index++;
        }
+       //echo '<pre>';
+       //var_dump($dataAfter);
+       //exit();
+       
        // grouping for doubles, unset last added double
        $lastInd = '0';
        foreach ($dataAfter as $ind => $row) {
@@ -342,7 +354,9 @@ class RequestSearchReport extends RequestSearch {
        foreach ($dataAfter as $ind => $row) {
            
            if (substr_count($row['reason_code'],'.') == 2) {
-               
+               if ($row['reason_code'] == '4.12.1') {
+                   continue;
+               }
                $groupKey = substr($ind,0,strpos($ind, '.',strpos($ind, '.',0)+1)).' ';
                $dataAfter[$groupKey]['verbally_tfoms_count'] = $dataAfter[$groupKey]['verbally_tfoms_count'] + $row['verbally_tfoms_count'];
                $dataAfter[$groupKey]['write_tfoms_count'] = $dataAfter[$groupKey]['write_tfoms_count'] + $row['write_tfoms_count'];
@@ -402,8 +416,8 @@ class RequestSearchReport extends RequestSearch {
             $i++;
         }
      // set border
-     $this->xls->getActiveSheet()->getStyle('A1:I'.(count($dataAfter)+5))->applyFromArray($BStyle);
-     $sheet->getStyle('A1:I'.(count($dataAfter)+5))->getAlignment()->setWrapText(true);
+     $this->xls->getActiveSheet()->getStyle('A1:I'.(count($dataAfter)+8))->applyFromArray($BStyle);
+     $sheet->getStyle('A1:I'.(count($dataAfter)+8))->getAlignment()->setWrapText(true);
      $sheet->getRowDimension(2)->setRowHeight(-1);
    }
 
