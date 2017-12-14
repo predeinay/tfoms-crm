@@ -19,6 +19,16 @@ $this->params['breadcrumbs'][] = ['label' => 'Список обращений', 
 $this->params['breadcrumbs'][] = $this->title;
 
 $js = '
+
+// прячем кнопку на 1 сек.
+$("#submitRequest").on("click",function(event){
+    var btn = this;
+    $(btn).css("display","none");
+    setInterval(function(){
+        $(btn).css("display","inline");
+    },3000)
+});
+
   function getReasonCustomFlag() {
 
         var l_reason_id = $("#requests-reason_id").val();
@@ -67,6 +77,9 @@ function showHideClaimCompany() {
   }
 
   init();
+  function init2() {
+    alert();
+  }
 ';
 
 $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
@@ -286,7 +299,10 @@ $this->registerJS($js,View::POS_READY, 'request-get-reason-info');
 
         <?php
         if ($action == 'create') {
-            echo Html::submitButton('Сохранить обращение', ['class' => 'btn btn-primary']);
+            echo Html::submitButton('Сохранить обращение', 
+                    [   'id' => 'submitRequest',
+                        'class' => 'btn btn-primary']
+                    );
         }
           else {
             echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary']);
