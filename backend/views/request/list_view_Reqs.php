@@ -221,6 +221,9 @@ $this->params['breadcrumbs'][] = $this->title;
               <?= Html::a('<span class="glyphicon glyphicon-stats"> </span> Сводный отчет в разрезе причин обращений',
                         ['request/report','reportType' => RequestSearchReport::PIVOT_BY_REASON],
                         ['class'=>'list-group-item']) ?>
+              <?= Html::a('<span class="glyphicon glyphicon-stats"> </span> Сводный отчет по жалобам и их причинам',
+                        ['request/report','reportType' => RequestSearchReport::PIVOT_BY_CLAIM],
+                        ['class'=>'list-group-item']) ?>
             </div>
         </div>
         <!--div class="modal-footer">

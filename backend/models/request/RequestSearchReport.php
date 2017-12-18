@@ -12,6 +12,7 @@ class RequestSearchReport extends RequestSearch {
 
   const SIMPLE_JOURNAL = 'simpleJournal';
   const PIVOT_BY_REASON = 'pivotByReason';
+  const PIVOT_BY_CLAIM = 'pivotByClaim';
 
   private $reportType;
   private $xls;
@@ -30,6 +31,114 @@ class RequestSearchReport extends RequestSearch {
     }
    }
 
+   private function pivotByClaim($searchModel) {
+        $this->xls = PHPExcel_IOFactory::load('reports_tpl/my_rep2.xls');
+        $this->fileName = 'Жалобы_свод_'.date('l jS \of F Y h:i:s A').'.xls';
+        $BStyle = [
+          'borders' => [
+            'allborders' => [
+              'style' => PHPExcel_Style_Border::BORDER_THIN
+            ]
+          ]
+        ];
+        $this->xls->setActiveSheetIndex(0);
+        $sheet = $this->xls->getActiveSheet();
+        
+        $sql = "select kind_text,
+              reason_text reason_text,
+              reason_code reason_code,
+              
+              write_tfoms_count,
+              write_smo_count,
+              write_tfoms_count + write_smo_count write_total,
+              
+              verbally_tfoms_count,
+              verbally_smo_count,
+              verbally_tfoms_count + verbally_smo_count total_verbally,
+              
+              write_tfoms_count + verbally_tfoms_count total_tfoms,
+              write_smo_count + verbally_smo_count total_smo,
+              cc_all,
+              substan_smo_count,
+              substan_tfoms_count,
+              substan_smo_count +
+              substan_tfoms_count total_substan
+              
+         from (
+            select kind.text kind_text,
+                  count(r.req_id) cc_all,
+                  rr.reason_text,
+                  reason_code,
+                  count(req_id) cc,
+                  sum(CASE WHEN form.text = 'устно' and resp_type.text = 'ТФОМС' then 1 else 0 END) verbally_tfoms_count,
+                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'ТФОМС' then 1 else 0 END) write_tfoms_count,
+                  sum(CASE WHEN form.text = 'устно' and resp_type.text = 'СМО' then 1 else 0 END) verbally_smo_count,
+                  sum(CASE WHEN form.text = 'письменно' and resp_type.text = 'СМО' then 1 else 0 END) write_smo_count,
+             
+                  sum(CASE WHEN res.text = 'обоснованно' and resp_type.text = 'СМО' then 1 else 0 END) substan_smo_count,
+             	  sum(CASE WHEN res.text = 'обоснованно' and resp_type.text = 'ТФОМС' then 1 else 0 END) substan_tfoms_count,
+             
+                  SUBSTRING_INDEX(reason_code,'.',1) a,
+                  CASE
+                    WHEN instr(reason_code,'.') >0 
+                     then substr(reason_code,1+instr(reason_code,'.'))
+                  END b
+             from ref_reasons rr left join requests r on rr.reason_id = r.reason_id ";
+        
+        if ($searchModel->claim_company_id) { $sql.= " and r.claim_company_id =  $searchModel->claim_company_id"; }
+        if ($searchModel->status_ref_id) {$sql.= " and r.status_ref_id =  $searchModel->status_ref_id";}
+        if ($searchModel->form_ref_id) {$sql.= " and r.form_ref_id =  $searchModel->form_ref_id";}
+        if ($searchModel->way_ref_id) {$sql.= " and r.way_ref_id =  $searchModel->way_ref_id";}
+        if ($searchModel->kind_ref_id) {$sql.= " and r.kind_ref_id =  $searchModel->kind_ref_id";}
+        if ($searchModel->reason_id) {$sql.= " and r.reason_id =  $searchModel->reason_id";}
+        if ($searchModel->result_ref_id) {$sql.= " and r.result_ref_id =  $searchModel->result_ref_id";}
+        if ($searchModel->created_by) {$sql.= " and r.created_by =  $searchModel->created_by";}
+        if ($searchModel->executed_by) {$sql.= " and r.executed_by =  $searchModel->executed_by";}
+        if ($searchModel->from_date) {$sql.= " and DATE(r.created_on) >=  '".Yii::$app->myhelper->to_date($searchModel->from_date)."'";}
+        if ($searchModel->to_date) {$sql.= " and DATE(r.created_on) <=  '".Yii::$app->myhelper->to_date($searchModel->to_date)."'";}
+        
+                        $sql.= " left join ref_common form on r.form_ref_id = form.ref_id
+                                 left join ref_company resp on r.company_id = resp.company_id
+                                 left join ref_common resp_type on resp.type_ref_id = resp_type.ref_id
+                                 left join ref_common kind on rr.kind_ref_id  = kind.ref_id
+                                 left join ref_common res on r.result_ref_id = res.ref_id
+             where kind.text = 'Жалоба'
+            group by kind.text, rr.reason_id, rr.reason_text
+          ) data 
+            order by CASE 
+                      WHEN kind_text = 'Жалоба' then 1
+                      WHEN kind_text = 'Заявление' then 2
+                      WHEN kind_text = 'Консультация' then 3
+                      else 4
+                     END , 
+                     cast(a as UNSIGNED),cast(b as DECIMAL(10,6))";
+        // execute sql
+        $data = Yii::$app->db->createCommand($sql)->queryAll();
+        
+        $i=6;
+        foreach ($data as $ind => $row) {
+            $sheet->setCellValue("A".($i),$row['reason_text'] );
+            $sheet->setCellValue("B".($i),$row['reason_code'] );
+            $sheet->setCellValue("C".($i),$row['write_tfoms_count'] );
+            $sheet->setCellValue("D".($i),$row['write_smo_count'] );
+            $sheet->setCellValue("E".($i),$row['write_total'] );
+            $sheet->setCellValue("F".($i),$row['verbally_tfoms_count'] );
+            $sheet->setCellValue("G".($i),$row['verbally_smo_count']);
+            $sheet->setCellValue("H".($i),$row['total_verbally'] );
+            $sheet->setCellValue("I".($i),$row['total_tfoms'] );
+            $sheet->setCellValue("J".($i),$row['total_smo'] );
+            $sheet->setCellValue("K".($i),$row['cc_all'] );
+            $sheet->setCellValue("L".($i),$row['substan_smo_count'] );
+            $sheet->setCellValue("M".($i),$row['substan_tfoms_count'] );
+            $sheet->setCellValue("N".($i),$row['total_substan'] );
+            $i++;
+        }
+        
+        //$this->xls->getActiveSheet()->getStyle('A1:I'.(count($dataAfter)+8))->applyFromArray($BStyle);
+        //$sheet->getStyle('A1:I'.(count($dataAfter)+8))->getAlignment()->setWrapText(true);
+        //$sheet->getRowDimension(2)->setRowHeight(-1);
+   }
+   
    private function pivotByReason($searchModel) {
      
      $this->xls = PHPExcel_IOFactory::load('reports_tpl/my_rep1.xls');
