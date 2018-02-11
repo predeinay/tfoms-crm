@@ -19,6 +19,7 @@ use backend\models\Uploads;
 use backend\models\upload\UploadRequestFile;
 use yii\web\UploadedFile;
 
+use yii\db\Expression;
 use PHPExcel_Writer_Excel5;
 
 class RequestController extends MainController {
@@ -101,7 +102,10 @@ class RequestController extends MainController {
                                                                       )->one()->ref_id
                                                                     ]
                                                             ]
-                                                        )
+                                                        )->andWhere(['or',
+                                                            ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
+                                                         ->andWhere(['or',
+                                                            ['>=','date_end',new Expression('NOW()')],['date_end' => null]])
                                                         ->all(),
                               'modelCompany' => refCompany::find()
                                                         ->where(
@@ -112,7 +116,10 @@ class RequestController extends MainController {
                                                                       )->one()->ref_id
                                                                     ]
                                                             ]
-                                                        )
+                                                        )->andWhere(['or',
+                                                            ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
+                                                         ->andWhere(['or',
+                                                            ['>=','date_end',new Expression('NOW()')],['date_end' => null]])
                                                         ->all(),
                               'modelExecutor' => $modelExecutor,
                               'action' => is_null($id) ? 'create' : 'edit']);

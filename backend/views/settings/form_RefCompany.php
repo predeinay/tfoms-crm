@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\DatePicker;
 
 $action == 'create' ? $this->title = 'Создание новой организации' : $this->title = 'Редактирование организации' ;
 
@@ -34,7 +35,34 @@ $this->params['breadcrumbs'][] = $this->title;
                             'allowClear' => true
                          ],
                     ]) ?> 
-        
+    <?= $form->field($model, 'date_start')->widget(DatePicker::className(),
+                    [
+                      'options' => [
+                                     'placeholder' => 'ДД.ММ.ГГГГ',
+                                     'value' => $model->date_start?
+                                            Yii::$app->formatter->asDate( $model->date_start ,'php:d.m.Y'):null,
+                                   ] ,
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'dd.mm.yyyy',
+                            'todayHighlight' => true
+                        ]
+                    ])
+            ?>
+    <?= $form->field($model, 'date_end')->widget(DatePicker::className(),
+                    [
+                      'options' => [
+                                     'placeholder' => 'ДД.ММ.ГГГГ',
+                                     'value' => $model->date_end?
+                                            Yii::$app->formatter->asDate( $model->date_end ,'php:d.m.Y'):null,
+                                   ] ,
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'dd.mm.yyyy',
+                            'todayHighlight' => true
+                        ]
+                    ])
+            ?>
     <?= $form->field($model, 'company_name')->textInput()->hint('Укажите название организации') ?>
     <?= $form->field($model, 'company_short_name')->textInput()->hint('Укажите краткое название организации') ?>
     <?= $form->field($model, 'company_code')->textInput()->hint('Укажите код организации') ?>

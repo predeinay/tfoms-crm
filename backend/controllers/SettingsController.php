@@ -307,15 +307,12 @@ class SettingsController extends MainController
     public function actionCompanyUpdate($id) {
 
         $model = refCompany::findOne($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->save() ) {
             parent::flash(true);
         } else {
             parent::flash(false);
         }
-
         return $this->redirect(['/settings/company']);
-
     }
 
     public function actionCompanyDelete($id) {
