@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use common\models\refCommon;
+use yii\db\Expression;
 
 class refCompany extends \yii\db\ActiveRecord
 {    
@@ -48,6 +49,40 @@ class refCompany extends \yii\db\ActiveRecord
         
         return $this->hasOne(refCommon::className(), ['ref_id' => 'type_ref_id']);
         
+    }
+    
+    public static function getClaimCompanies($isActual = false) {
+        $model = self::find()->where(
+                        [ 'not in','type_ref_id',
+                                [ refCommon::find()->where(
+                                        ['text' => 'ТФОМС',
+                                         'type' => 'Тип организации']
+                                  )->one()->ref_id
+                                ]
+                        ]
+                    );
+        $model = $isActual?$model->andWhere(['or',
+                                ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
+                             ->andWhere(['or',
+                                ['>=','date_end',new Expression('NOW()')],['date_end' => null]]) : $model;
+        return $model->all();
+    }
+    
+    public static function getNotMed($isActual = false) {
+        $model = refCompany::find()->where(
+                        [ 'not in','type_ref_id',
+                                [ refCommon::find()->where(
+                                        ['text' => 'МО',
+                                         'type' => 'Тип организации']
+                                  )->one()->ref_id
+                                ]
+                        ]
+                    );
+        $model = $isActual?$model->andWhere(['or',
+                                ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
+                             ->andWhere(['or',
+                                ['>=','date_end',new Expression('NOW()')],['date_end' => null]]) : $model;
+        return $model->all();
     }
     
     public function beforeSave($insert) {

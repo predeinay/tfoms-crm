@@ -66,17 +66,13 @@ class RequestController extends MainController {
 
     // Форма для обращений
     public function actionForm($id = null) {
-
+        $isNeedActualCompanies = false;
         if (!is_null($id)) {
             $model = Requests::findOne($id);
-
         } else {
             $model = new Requests();
-            // default values
-            $model->executed_by = Yii::$app->user->identity->user_id;
-            $model->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
-            $model->company_id = Yii::$app->user->identity->company_id;
-            $model->status_ref_id = refCommon::getStatusId('в работе');
+            $model->setDefaults();
+            $isNeedActualCompanies = true;
         }
 
         $model->created_on = Yii::$app->myhelper->to_beauty_date_time($model->created_on);
@@ -93,34 +89,8 @@ class RequestController extends MainController {
                               'modelStatus' => refCommon::getRefByName('Статус обращения'),
                               'modelResult' => refCommon::getRefResult($model->kind_ref_id)->all(),
                               'modelReason' => refReason::findAll(['kind_ref_id' => $model->kind_ref_id]),
-                              'modelClaimCompany' => refCompany::find()
-                                                        ->where(
-                                                            [ 'not in','type_ref_id',
-                                                                    [ refCommon::find()->where(
-                                                                            ['text' => 'ТФОМС',
-                                                                             'type' => 'Тип организации']
-                                                                      )->one()->ref_id
-                                                                    ]
-                                                            ]
-                                                        )->andWhere(['or',
-                                                            ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
-                                                         ->andWhere(['or',
-                                                            ['>=','date_end',new Expression('NOW()')],['date_end' => null]])
-                                                        ->all(),
-                              'modelCompany' => refCompany::find()
-                                                        ->where(
-                                                            [ 'not in','type_ref_id',
-                                                                    [ refCommon::find()->where(
-                                                                            ['text' => 'МО',
-                                                                             'type' => 'Тип организации']
-                                                                      )->one()->ref_id
-                                                                    ]
-                                                            ]
-                                                        )->andWhere(['or',
-                                                            ['<=','date_start',new Expression('NOW()')],['date_start' => null]])
-                                                         ->andWhere(['or',
-                                                            ['>=','date_end',new Expression('NOW()')],['date_end' => null]])
-                                                        ->all(),
+                              'modelClaimCompany' => refCompany::getClaimCompanies($isNeedActualCompanies),
+                              'modelCompany' => refCompany::getNotMed($isNeedActualCompanies),
                               'modelExecutor' => $modelExecutor,
                               'action' => is_null($id) ? 'create' : 'edit']);
     }

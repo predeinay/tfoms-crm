@@ -5,6 +5,7 @@ namespace common\models;
 use common\models\globalConfig;
 use common\models\reqComment;
 use backend\models\Uploads;
+use common\models\refCommon;
 use Yii;
 
 class Requests extends \yii\db\ActiveRecord
@@ -123,6 +124,13 @@ class Requests extends \yii\db\ActiveRecord
 
     public function getCommentCount() {
       return reqComment::find()->where(['request_id' => $this->req_id])->count();
+    }
+    
+    public function setDefaults() {
+        $this->executed_by = Yii::$app->user->identity->user_id;
+        $this->created_on = Yii::$app->db->createCommand('select NOW() as sdate from dual')->queryOne()['sdate'];
+        $this->company_id = Yii::$app->user->identity->company_id;
+        $this->status_ref_id = refCommon::getStatusId('в работе');
     }
 
 }
