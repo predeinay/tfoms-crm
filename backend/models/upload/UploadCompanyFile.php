@@ -33,8 +33,8 @@ class UploadCompanyFile extends UploadBase {
 
                 // для каждого REC элемента
                 foreach($xml->REC as $obj) {
-                    $dStart = DateTime::createFromFormat('d.m.Y', $obj['D_START']);
-                    $dEnd = DateTime::createFromFormat('d.m.Y', $obj['DATE_E']);
+                    $dStart = DateTime::createFromFormat('d.m.Y', $obj['D_BEGIN']);
+                    $dEnd = DateTime::createFromFormat('d.m.Y', $obj['D_END']);
                     //var_dump($dStart->format('Y-m-d'));
                     //var_dump($dEnd->format('Y-m-d'));
                     //exit();
