@@ -35,6 +35,7 @@ class UploadCompanyFile extends UploadBase {
                 foreach($xml->REC as $obj) {
                     $dStart = DateTime::createFromFormat('d.m.Y', $obj['D_BEGIN']);
                     $dEnd = DateTime::createFromFormat('d.m.Y', $obj['D_END']);
+                    
                     //var_dump($dStart->format('Y-m-d'));
                     //var_dump($dEnd->format('Y-m-d'));
                     //exit();
@@ -51,7 +52,7 @@ class UploadCompanyFile extends UploadBase {
                     $companyModel->company_code = $obj['MCOD'];
                     $companyModel->type_ref_id = $model->ref_id;
                     $companyModel->date_start = $dStart->format('Y-m-d');
-                    $companyModel->date_end = $dEnd->format('Y-m-d');
+                    $companyModel->date_end = $dEnd != false ? $dEnd->format('Y-m-d'):null;
                     $companyModel->save();
 
                 }
